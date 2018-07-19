@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  background-color: #222;
+  margin: 2em;
+}
+
+h1{
+  color: #81ef0b;
+  font-family: "Syncopate" , sans-serif;
+  font-size: 250%;
+}
