@@ -15,6 +15,7 @@ interface MenuOverlayConfig {
 const ITEMS = [
   { "text": "artists", "icon": "record_voice_over" },
   { "text": "tracks", "icon": "music_video" },
+  { "text": "moods", "icon": "mood" },
   { "text": "github", "icon": "cloud_download" }
 ];
 
@@ -59,6 +60,9 @@ export class Menu {
       case "tracks":
         this.showTracks();
         break;
+      case "moods":
+        this.showMoods();
+        break;
       case "github":
         this.gotoGithub();
         break;
@@ -71,6 +75,10 @@ export class Menu {
 
   showTracks() {
     this.selectionEvent.emit('tracks')
+  }
+
+  showMoods() {
+    this.selectionEvent.emit('moods')
   }
 
   gotoGithub() {

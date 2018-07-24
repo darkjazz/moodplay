@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
-import { Artist, Coords, Track, TrackCoords, ArtistCoords, Limits } from '../shared/models';
+import { Artist, Coords, Track, TrackCoords, ArtistCoords, Limits, Mood } from '../shared/models';
 import { Config } from '../shared/config';
 
 @Injectable()
@@ -45,6 +45,15 @@ export class MoodplayService {
       .toPromise()
       .then((res:Response) => {
         return res.json() as ArtistCoords[];
+      })
+      .catch(this.handleError);
+  }
+
+  public getMoods(): Promise<Mood[]> {
+    return this.http.get(Config.server + Config.moodplay + '/get_moods/')
+      .toPromise()
+      .then((res:Response) => {
+        return res.json() as Mood[];
       })
       .catch(this.handleError);
   }

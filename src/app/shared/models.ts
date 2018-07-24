@@ -20,6 +20,7 @@ export class Track {
   track_duration: string;
   album_title: string;
   release_year: string;
+  preview: string;
   artist: Artist;
   coords: Coords;
 }
@@ -44,4 +45,10 @@ export class Limits{
   min_valence: Number;
   max_arousal: Number;
   min_arousal: Number;
+}
+
+export class Mood{
+  label: string;
+  valence: Number;
+  arousal: Number;
 }

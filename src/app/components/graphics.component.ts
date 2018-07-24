@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef, Renderer } from "@angular/core";
 import { MoodplayService } from '../services/moodplay.service';
-import { ArtistCoords, TrackCoords } from '../shared/models';
+import { ArtistCoords, TrackCoords, Mood } from '../shared/models';
 import * as d3 from "d3";
 
 @Component({
@@ -14,6 +14,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
   @Input() selectionInput: string;
   artists: ArtistCoords[];
   tracks: TrackCoords[];
+  moods: Mood[];
   svg;
   width;
   height;
@@ -29,6 +30,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
       this.getArtists();
     if (changes['selectionInput'].currentValue == 'tracks')
       this.getTracks();
+    if (changes['selectionInput'].currentValue == 'moods')
+      this.getMoods();
   }
 
   getArtists(): void {
@@ -47,6 +50,14 @@ export class GraphicsComponent implements OnInit, OnChanges {
       })
   }
 
+  getMoods(): void {
+    this.moodplayService.getMoods()
+      .then(moods => {
+        this.moods = moods;
+        this.initialiseMoods();
+      })
+  }
+
   initialiseArtists(): void {
     d3.select('svg').selectAll('*').remove();
     this.svg = d3.select(this.element.nativeElement);
@@ -62,13 +73,14 @@ export class GraphicsComponent implements OnInit, OnChanges {
         .attr("fill", d => { return this.color(d.angle = Math.atan2(d.arousal, d.valence)) })
         .attr("cx", d => { return Math.cos(d.angle) * (this.width / Math.SQRT2 + 30) + 480 })
         .attr("cy", d => { return Math.sin(d.angle) * (this.height / Math.SQRT2 + 30) + 480 })
-        .attr("r", d => { return 5 })
+        .attr("r", d => { return 4 })
+        .attr("opacity", 0.8)
         .attr("cursor", "pointer")
         .on("mouseover", d => this.showArtistInfo(d) )
         .on("mouseout", d => this.hideArtistInfo(d) )
       .transition()
         .ease(d3.easeCubicOut)
-        .delay( d => { return Math.random() * 3000 }).duration(1000)
+        .delay( d => { return Math.random() * 3000 }).duration(2000)
         .attr("cx", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
         .attr("cy", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 }); // WHY??
 
@@ -103,12 +115,13 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .attr("cx", d => { return Math.cos(d.angle) * (this.width / Math.SQRT2 + 30) + 480 })
       .attr("cy", d => { return Math.sin(d.angle) * (this.height / Math.SQRT2 + 30) + 480 })
       .attr("r", d => { return 3 })
+      .attr("opacity", 0.8)
       .attr("cursor", "pointer")
       .on("mouseover", d => this.showTrackInfo(d) )
       .on("mouseout", d => this.hideTrackInfo(d) )
     .transition()
       .ease(d3.easeCubicOut)
-      .delay( d => { return Math.random() * 3000 }).duration(1000)
+      .delay( d => { return Math.random() * 3000 }).duration(2000)
       .attr("cx", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
       .attr("cy", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
 
@@ -125,6 +138,51 @@ export class GraphicsComponent implements OnInit, OnChanges {
         .style("pointer-events", "none")
         .attr("opacity", 0.0)
         .attr("cursor", "pointer")
+  }
+
+  initialiseMoods(): void {
+    d3.select('svg').selectAll('*').remove();
+    this.svg = d3.select(this.element.nativeElement);
+
+    this.width = +this.svg.attr("width");
+    this.height = +this.svg.attr("height");
+
+    this.color = d3.scaleSequential(d3.interpolateRainbow).domain([1 * Math.PI, -1 * Math.PI]);
+
+    this.svg.append("g").selectAll("circle").data(this.moods)
+    .enter()
+    .append("circle")
+      .attr("fill", d => { return this.color(d.angle = Math.atan2(d.arousal, d.valence)) })
+      .attr("cx", d => { return Math.cos(d.angle) * (this.width / Math.SQRT2 + 30) + 480 })
+      .attr("cy", d => { return Math.sin(d.angle) * (this.height / Math.SQRT2 + 30) + 480 })
+      .attr("r", d => { return 20 })
+      .attr("opacity", 0.8)
+      .attr("cursor", "pointer")
+      .on("mouseover", d => this.showMoodInfo(d) )
+      .on("mouseout", d => this.hideMoodInfo(d) )
+    .transition()
+      .ease(d3.easeCubicOut)
+      .delay( d => { return Math.random() * 3000 }).duration(2000)
+      .attr("cx", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
+      .attr("cy", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
+
+      this.label = this.svg.selectAll(".label")
+      	.data(this.moods)
+      	.enter().append("text")
+        .text( d => { return d.label } )
+        .attr("x", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
+        .attr("y", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
+        .style("text-anchor", "middle")
+        .style("fill", "#bbb")
+        .style("font-family", "Nunito")
+        .style("font-size", "10pt")
+        .style("pointer-events", "none")
+        .attr("opacity", 0.0)
+        .attr("cursor", "pointer")
+        .transition()
+          .ease(d3.easeCubicOut)
+          .delay(3000).duration(1000)
+          .attr("opacity", 0.7)
   }
 
   showArtistInfo(selected) {
@@ -151,7 +209,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
   showTrackInfo(selected) {
     this.svg.selectAll("text").filter(node => {
-      return (node["title"] == selected.title)
+      return (node["title"] == selected.title && node["artist"] == selected["artist"])
     }).transition().duration(200)
       .style("font-size", "7pt")
       .style("fill", "#ddd")
@@ -169,5 +227,27 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("-webkit-text-stroke-width", "0px")
       .style("-webkit-text-stroke-color", "#000")
       .attr("opacity", 0.0);
+  }
+
+  showMoodInfo(selected) {
+    this.svg.selectAll("text").filter(node => {
+      return (node["label"] == selected.label)
+    }).transition().duration(200)
+      .style("font-size", "16pt")
+      .style("fill", "#ddd")
+      .style("-webkit-text-stroke-width", "0px")
+      .style("-webkit-text-stroke-color", "#000")
+      .attr("opacity", 0.9);
+  }
+
+  hideMoodInfo(selected) {
+    this.svg.selectAll("text").filter(node => {
+      return (node["label"] == selected.label)
+    }).transition().duration(200)
+      .style("font-size", "10pt")
+      .style("fill", "#bbb")
+      .style("-webkit-text-stroke-width", "0px")
+      .style("-webkit-text-stroke-color", "#000")
+      .attr("opacity", 0.7);
   }
 }
