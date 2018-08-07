@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef, Renderer } from "@angular/core";
 import { MoodplayService } from '../services/moodplay.service';
+import { PlayerService } from '../services/player.service';
 import { ArtistCoords, TrackCoords, Mood } from '../shared/models';
 import * as d3 from "d3";
 
@@ -21,7 +22,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
   color;
   label;
 
-  constructor(private moodplayService: MoodplayService, public renderer: Renderer) { }
+  constructor(private moodplayService: MoodplayService,
+    private playerService: PlayerService, public renderer: Renderer) { }
 
   ngOnInit(): void { }
 
@@ -78,6 +80,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
         .attr("cursor", "pointer")
         .on("mouseover", d => this.showArtistInfo(d) )
         .on("mouseout", d => this.hideArtistInfo(d) )
+        .on("click", d => this.playerService.transitionToArtist(d))
       .transition()
         .ease(d3.easeCubicOut)
         .delay( d => { return Math.random() * 3000 }).duration(2000)
