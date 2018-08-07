@@ -17,18 +17,21 @@ export class PlayerService  {
   }
 
   async transitionToArtist(artist: ArtistCoords) {
-    const clip = await this.deezer.get30SecClip(artist.name);
+    const clip = await this.deezer.get30SecClipFromSearch(artist.name);
     this.dj.transitionToSong(clip);
   }
 
   async transitionToTrack(track: TrackCoords) {
-    const clip = await this.deezer.get30SecClip(track.filename);
+    const clip = await this.deezer.get30SecClipFromSearch(track.title);
+    console.log(track, clip)
     this.dj.transitionToSong(clip);
   }
 
   async transitionToMood(mood: Mood) {
     const track = await this.moodplayService.getNearestTrack(mood.valence, mood.arousal);
-    this.dj.transitionToSong(track.filename);
+    const clip = await this.deezer.get30SecClipFromTrackId(track.deezer_id);
+    console.log(track, clip)
+    this.dj.transitionToSong(clip);
   }
 
 }
