@@ -29,7 +29,7 @@ export class MixGenerator {
     return this.mixDymoUri;
   }
 
-  async startMixWithFadeIn(songUri: string, numBars = 3): Promise<number> {
+  async startMixWithFadeIn(songUri: string, numBars = 2): Promise<number> {
     let newSongBars = await this.registerSongAndGetBars(songUri);
     await this.addPartsToMix(newSongBars);
     let [duration, uris] = await this.applyFadeIn(newSongBars.slice(0, numBars));
@@ -37,7 +37,7 @@ export class MixGenerator {
     return duration + TRIGGER_DELAY;
   }
 
-  async direct(songUri: string, offsetBars = 8): Promise<number> {
+  async direct(songUri: string, offsetBars = 0): Promise<number> {
     let newSongBars = await this.registerSongAndGetBars(songUri, offsetBars);
     let currentPos = await this.player.getPosition(this.mixDymoUri);
     await this.store.removeParts(this.mixDymoUri, currentPos+1);
@@ -45,7 +45,7 @@ export class MixGenerator {
     return TRIGGER_DELAY;
   }
 
-  async beatRepeat(songUri: string, times = 2, offsetBars = 8): Promise<number> {
+  async beatRepeat(songUri: string, times = 2, offsetBars = 0): Promise<number> {
     let newSongBars = await this.registerSongAndGetBars(songUri, offsetBars);
     let currentPos = await this.player.getPosition(this.mixDymoUri);
     let oldSongBars = await this.store.removeParts(this.mixDymoUri, currentPos+1);
@@ -81,7 +81,7 @@ export class MixGenerator {
     //return Promise.all(newSongBars.map(p => this.store.setParameter(p, uris.DELAY, 0)));
   }
 
-  async reverbPanDirect(songUri: string, numBars = 3, offsetBars = 8): Promise<number> {
+  async reverbPanDirect(songUri: string, numBars = 3, offsetBars = 0): Promise<number> {
     let newSongBars = await this.registerSongAndGetBars(songUri);
     //remove rest of old song
     let currentPos = await this.player.getPosition(this.mixDymoUri);
@@ -119,7 +119,7 @@ export class MixGenerator {
     return powerDuration + numBarsBreak + TRIGGER_DELAY;
   }
 
-  async crossfade(songUri: string, numBars = 4, offsetBars = 8) {
+  async crossfade(songUri: string, numBars = 3, offsetBars = 0) {
     let newSongBars = await this.registerSongAndGetBars(songUri, offsetBars);
     let currentPos = await this.player.getPosition(this.mixDymoUri);
     let restOfOldSong = await this.store.removeParts(this.mixDymoUri, currentPos+1);
@@ -131,7 +131,7 @@ export class MixGenerator {
     return duration + TRIGGER_DELAY;
   }
 
-  async beatmatchCrossfade(songUri: string, numBars = 4, offsetBars = 8) {
+  async beatmatchCrossfade(songUri: string, numBars = 4, offsetBars = 0) {
     let newSongBars = await this.registerSongAndGetBars(songUri, offsetBars);
     let currentPos = await this.player.getPosition(this.mixDymoUri);
     let restOfOldSong = await this.store.removeParts(this.mixDymoUri, currentPos+1);

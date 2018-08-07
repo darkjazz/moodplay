@@ -19,7 +19,7 @@ export class AutoDj {
 
   //TODO AT SOME POINT IN THE FUTURE WE MAY HAVE AN API WITH SOME FEATURES
   constructor(private featureApi: string, private featureExtractor: FeatureExtractor) {
-    this.player = new DymoPlayer(true, false, 1, 3);
+    this.player = new DymoPlayer(false, false, 0.2, 3);
   }
 
   init(): Promise<any> {
@@ -49,9 +49,9 @@ export class AutoDj {
     let keys = await this.featureExtractor.extractKey(buffer);
     this.dymoGen.setSummarizingMode(globals.SUMMARY.MODE);
     await this.dymoGen.addFeature("key", keys, newSong);
-    let oldSong = _.last(this.previousSongs);
     let transition = await this.internalTransition(newSong);
     if (this.previousSongs.length > 1) {
+      let oldSong = _.last(this.previousSongs);
       transition.features = await this.analyzer.getAllFeatures(oldSong, newSong);
     }
     return transition;
@@ -59,12 +59,17 @@ export class AutoDj {
 
   private async internalTransition(newSong: string): Promise<Transition> {
     await this.player.getDymoManager().loadFromStore(newSong);
-    let transition// = this.defaultTransition(newSong);
-    if (Math.random() > 0.5) {
-      transition = this.randomTransition(newSong);
-    } else {
-      transition = this.startWhicheverTransitionIsBest(newSong);
+    //stopped playing, reset
+    if (this.previousSongs.length > 0 && this.player.isPlaying(this.mixGen.getMixDymo())) {
+      this.previousSongs = [];
+      await this.mixGen.init();
     }
+    const transition = await this.defaultTransition(newSong);
+    /*if (Math.random() > 0.5) {
+      transition = await this.randomTransition(newSong);
+    } else {*/
+      //transition = await this.startWhicheverTransitionIsBest(newSong);
+    //}
     this.previousSongs.push(newSong);
     this.keepOnPlaying(this.mixGen.getMixDymo());
     return transition;
@@ -76,8 +81,8 @@ export class AutoDj {
     if (this.previousSongs.length > 0) {
       //await this.startWhicheverTransitionIsBest(newSong);
       //(this.getRandomTransition())(newDymo);
-      transition.type = TransitionType.BeatRepeat;
-      transition.duration = await this.mixGen.beatRepeat(newSong);
+      transition.type = TransitionType.Beatmatch;
+      transition.duration = await this.mixGen.crossfade(newSong);
     } else {
       transition.type = TransitionType.FadeIn;
       transition.duration = await this.mixGen.startMixWithFadeIn(newSong);

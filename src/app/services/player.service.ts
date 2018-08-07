@@ -16,7 +16,6 @@ export class PlayerService  {
 
   async transitionToArtist(artist: ArtistCoords) {
     const songClip = await this.deezer.get30SecClip(artist.name);
-    console.log(songClip);
     this.dj.transitionToSong(songClip);
   }
 
