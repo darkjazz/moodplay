@@ -211,7 +211,7 @@ export class MixGenerator {
     let fadeRamp = await this.generator.addRampControl(0, fadeDuration, 100);
     let fadeIn = await this.makeRampConstraint(fadeRamp, newSongParts, 'Amplitude(d) == r');
     let fadeOut = await this.makeRampConstraint(fadeRamp, oldSongParts, 'Amplitude(d) == 1-r');
-    console.log("crossfading in for", newSongParts.length, "bars (", fadeDuration, "seconds)");
+    console.log("crossfading for", newSongParts.length, "bars (", fadeDuration, "seconds)");
     return [fadeDuration, [fadeRamp, fadeIn, fadeOut]];
   }
 

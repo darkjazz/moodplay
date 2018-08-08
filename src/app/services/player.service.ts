@@ -23,14 +23,12 @@ export class PlayerService  {
 
   async transitionToTrack(track: TrackCoords) {
     const clip = await this.deezer.get30SecClipFromSearch(track.title);
-    console.log(track, clip)
     this.dj.transitionToSong(clip);
   }
 
   async transitionToMood(mood: Mood) {
     const track = await this.moodplayService.getNearestTrack(mood.valence, mood.arousal);
-    const clip = await this.deezer.get30SecClipFromTrackId(track.deezer_id);
-    console.log(track, clip)
+    const clip = await this.deezer.get30SecClipFromTrackId(<number>track.deezer_id);
     this.dj.transitionToSong(clip);
   }
 

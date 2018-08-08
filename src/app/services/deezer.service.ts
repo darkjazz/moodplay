@@ -32,14 +32,14 @@ export class DeezerService {
     const query = API_SEARCH_URL+'"'+searchString+'"'+PARAMS+JSONP_OPTIONS;
     const response = await this.jsonp.get(query).toPromise();
     const items: DeezerItem[] = (await response.json()).data;
-    return items.length > 0 ? items[0].preview : undefined;
+    return items.length && items.length > 0 ? items[0].preview : undefined;
   }
 
   async get30SecClipFromTrackId(id: number) {
-    const query = API_TRACK_URL+id+PARAMS+JSONP_OPTIONS;
+    const query = API_TRACK_URL+id+JSONP_OPTIONS;
     const response = await this.jsonp.get(query).toPromise();
-    const items: DeezerItem[] = (await response.json()).data;
-    return items.length > 0 ? items[0].preview : undefined;
+    const item: DeezerItem = await response.json();
+    return item ? item.preview : undefined;
   }
 
 }

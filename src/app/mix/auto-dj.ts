@@ -19,7 +19,7 @@ export class AutoDj {
 
   //TODO AT SOME POINT IN THE FUTURE WE MAY HAVE AN API WITH SOME FEATURES
   constructor(private featureApi: string, private featureExtractor: FeatureExtractor) {
-    this.player = new DymoPlayer(false, false, 0.2, 3);
+    this.player = new DymoPlayer(false, false, 1, 3);
   }
 
   init(): Promise<any> {
@@ -60,7 +60,7 @@ export class AutoDj {
   private async internalTransition(newSong: string): Promise<Transition> {
     await this.player.getDymoManager().loadFromStore(newSong);
     //stopped playing, reset
-    if (this.previousSongs.length > 0 && this.player.isPlaying(this.mixGen.getMixDymo())) {
+    if (this.previousSongs.length > 0 && !this.player.isPlaying(this.mixGen.getMixDymo())) {
       this.previousSongs = [];
       await this.mixGen.init();
     }
