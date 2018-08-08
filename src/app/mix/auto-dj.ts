@@ -15,7 +15,6 @@ export class AutoDj {
   private player: DymoPlayer;
   private previousPlayingDymos = [];
   private previousSongs = [];
-  private isPlaying;
 
   //TODO AT SOME POINT IN THE FUTURE WE MAY HAVE AN API WITH SOME FEATURES
   constructor(private featureApi: string, private featureExtractor: FeatureExtractor) {
@@ -58,12 +57,12 @@ export class AutoDj {
   }
 
   private async internalTransition(newSong: string): Promise<Transition> {
-    await this.player.getDymoManager().loadFromStore(newSong);
     //stopped playing, reset
     if (this.previousSongs.length > 0 && !this.player.isPlaying(this.mixGen.getMixDymo())) {
       this.previousSongs = [];
       await this.mixGen.init();
     }
+    await this.player.getDymoManager().loadFromStore(newSong);
     const transition = await this.defaultTransition(newSong);
     /*if (Math.random() > 0.5) {
       transition = await this.randomTransition(newSong);
@@ -71,7 +70,7 @@ export class AutoDj {
       //transition = await this.startWhicheverTransitionIsBest(newSong);
     //}
     this.previousSongs.push(newSong);
-    this.keepOnPlaying(this.mixGen.getMixDymo());
+    this.player.playUri(this.mixGen.getMixDymo());
     return transition;
   }
 
@@ -189,13 +188,6 @@ export class AutoDj {
       [(newDymo: string) => this.mixGen.reverbPanDirect(newDymo), TransitionType.Effects]
     ];
     return transitions[_.random(transitions.length)];
-  }
-
-  private keepOnPlaying(dymoUri: string) {
-    if (!this.isPlaying) {
-      this.player.playUri(dymoUri);
-      this.isPlaying = true;
-    }
   }
 
 }

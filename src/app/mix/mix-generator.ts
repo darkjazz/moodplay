@@ -10,8 +10,8 @@ const TRIGGER_DELAY = 3;
 export class MixGenerator {
 
   private mixDymoUri: string;
-  private songs: string[] = [];
-  private transitions: string[][] = []; //ARRAY OF CONSTRAINT URIS FOR NOW
+  private songs: string[];
+  private transitions: string[][]; //ARRAY OF CONSTRAINT URIS FOR NOW
   private store: SuperDymoStore;
   private expressionGen: ExpressionGenerator;
 
@@ -22,6 +22,8 @@ export class MixGenerator {
   }
 
   async init() {
+    this.songs = [];
+    this.transitions = [];
     this.mixDymoUri = await this.generator.addDymo();
   }
 
