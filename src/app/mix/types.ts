@@ -36,13 +36,13 @@ export enum TransitionType {
 }
 
 export interface Transition {
+  type: TransitionType,
+  duration: number,
   date: Date,
   user: string,
   rating: number,
   names: string[],
   features: number[],
-  type: TransitionType,
   decision: DecisionType,
-  parameters: number[],
-  duration: number
+  parameters: number[]
 }
