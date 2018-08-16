@@ -18,7 +18,7 @@ export class AutoDj {
 
   //TODO AT SOME POINT IN THE FUTURE WE MAY HAVE AN API WITH SOME FEATURES
   constructor(private featureApi: string, private featureExtractor: FeatureExtractor) {
-    this.player = new DymoPlayer(false, false, 1, 3);
+    this.player = new DymoPlayer(false, false, 1, 3)//, undefined, undefined, true);
   }
 
   init(): Promise<any> {
@@ -44,13 +44,16 @@ export class AutoDj {
   async transitionToSong(audioUri: string): Promise<Transition> {
     let buffer = await (await this.player.getAudioBank()).getAudioBuffer(audioUri);
     let beats = await this.featureExtractor.extractBeats(buffer);
+    //drop initial and final incomplete bars
+    beats = _.dropWhile(beats, b => b.label.value !== "1");
+    beats = _.dropRightWhile(beats, b => b.label.value !== "4");
     let newSong = await DymoTemplates.createAnnotatedBarAndBeatDymo2(this.dymoGen, audioUri, beats);
+    let oldSong = this.previousSongs.length ? _.last(this.previousSongs) : undefined;
     let keys = await this.featureExtractor.extractKey(buffer);
     this.dymoGen.setSummarizingMode(globals.SUMMARY.MODE);
     await this.dymoGen.addFeature("key", keys, newSong);
     let transition = await this.internalTransition(newSong);
-    if (this.previousSongs.length > 1) {
-      let oldSong = _.last(this.previousSongs);
+    if (oldSong) {
       transition.features = await this.analyzer.getAllFeatures(oldSong, newSong);
     }
     return transition;
@@ -79,7 +82,7 @@ export class AutoDj {
     if (this.previousSongs.length > 0) {
       //transition = await this.startWhicheverTransitionIsBest(newSong);
       //transition = await this.randomTransition(newSong);
-      transition = await this.mixGen.crossfade(newSong);
+      transition = await this.mixGen.beatmatchCrossfade(newSong);
     } else {
       transition = await this.mixGen.startMixWithFadeIn(newSong);
     }
