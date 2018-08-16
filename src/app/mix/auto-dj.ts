@@ -79,7 +79,7 @@ export class AutoDj {
     if (this.previousSongs.length > 0) {
       //transition = await this.startWhicheverTransitionIsBest(newSong);
       //transition = await this.randomTransition(newSong);
-      transition = await this.mixGen.slam(newSong);
+      transition = await this.mixGen.crossfade(newSong);
     } else {
       transition = await this.mixGen.startMixWithFadeIn(newSong);
     }
@@ -121,7 +121,7 @@ export class AutoDj {
         }*/ else if (await this.analyzer.getKeyDistance(newSong, previousSong) <= 2) {
           console.log("key similar")
           if (Math.random() > 0.5) {
-            transition = await this.mixGen.reverbPanDirect(newSong);
+            transition = await this.mixGen.effects(newSong);
           } else {
             transition = await this.mixGen.echoFreeze(newSong);
           }
@@ -157,7 +157,7 @@ export class AutoDj {
       (newDymo: string) => this.mixGen.beatRepeat(newDymo),
       (newDymo: string) => this.mixGen.crossfade(newDymo),
       (newDymo: string) => this.mixGen.powerDown(newDymo),
-      (newDymo: string) => this.mixGen.reverbPanDirect(newDymo)
+      (newDymo: string) => this.mixGen.effects(newDymo)
     ];
     return transitions[_.random(transitions.length)];
   }
