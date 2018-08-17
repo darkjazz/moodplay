@@ -27,6 +27,7 @@ export class Analyzer {
 
   private beatsCache: Map<string, number[]> = new Map<string, number[]>();
   private keysCache: Map<string, number> = new Map<string, number>();
+  private tempoCache: Map<string, number> = new Map<string, number>();
 
   constructor(private store: SuperDymoStore) {}
 
@@ -64,9 +65,11 @@ export class Analyzer {
   }
 
   async getTempo(songUri: string): Promise<number> {
-    const durations = await this.getBeatDurations(songUri);
-    //console.log("tempo", 60/math.mean(durations))
-    return 60/math.mean(durations);
+    if (!this.tempoCache.has(songUri)) {
+      const durations = await this.getBeatDurations(songUri);
+      this.tempoCache.set(songUri, 60/math.mean(durations));
+    }
+    return this.tempoCache.get(songUri);
   }
 
   async getTempoMultiple(song1Uri: string, song2Uri: string): Promise<number> {

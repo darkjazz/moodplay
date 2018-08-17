@@ -29,7 +29,7 @@
     "ajv": "^6.5.2",
     "core-js": "^2.5.7",
     "d3": "^5.5.0",
-    "dymo-player": "github:dynamic-music/dymo-player#6f5c3ae818db35d7452ab025da31dca24eb3813d",
+    "dymo-player": "github:dynamic-music/dymo-player#283b03807e62d19bf43563e5e35ceee3aa5313bb",
     "howler": "^2.0.14",
     "html-webpack-plugin": "^3.2.0",
     "karma-webpack": "^3.0.0",
