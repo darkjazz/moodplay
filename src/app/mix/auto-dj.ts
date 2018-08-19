@@ -18,7 +18,7 @@ export class AutoDj {
 
   //TODO AT SOME POINT IN THE FUTURE WE MAY HAVE AN API WITH SOME FEATURES
   constructor(private featureApi: string, private featureExtractor: FeatureExtractor) {
-    this.player = new DymoPlayer(false, false, 0.5, 2)//, undefined, undefined, true);
+    this.player = new DymoPlayer(true, false, 0.5, 2)//, undefined, undefined, true);
   }
 
   init(): Promise<any> {
