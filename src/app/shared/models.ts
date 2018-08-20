@@ -28,6 +28,7 @@ export class Track {
 export class TrackCoords{
   valence: Number;
   arousal: Number;
+  deezer_id: number;
   filename: string;
   artist: string;
   title: string;

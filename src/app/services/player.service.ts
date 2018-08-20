@@ -22,7 +22,7 @@ export class PlayerService  {
   }
 
   async transitionToTrack(track: TrackCoords) {
-    const clip = await this.deezer.get30SecClipFromSearch(track.title);
+    const clip = await this.deezer.get30SecClipFromTrackId(track.deezer_id);
     this.dj.transitionToSong(clip);
   }
 
