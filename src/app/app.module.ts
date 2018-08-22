@@ -11,7 +11,6 @@ import { AppComponent } from './app.component';
 import { Menu } from './components/menu.component';
 import { MoodplayService } from './services/moodplay.service';
 import { DeezerService } from './services/deezer.service';
-import { FeatureExtractionService } from './services/feature-extraction.service';
 import { PlayerService } from './services/player.service';
 import { GraphicsComponent } from './components/graphics.component';
 
@@ -33,8 +32,7 @@ import { GraphicsComponent } from './components/graphics.component';
     OverlayModule,
     PortalModule
   ],
-  providers: [ MoodplayService, DeezerService,
-    FeatureExtractionService, PlayerService ],
+  providers: [ MoodplayService, DeezerService, PlayerService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
