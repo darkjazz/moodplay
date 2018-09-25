@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DeezerService } from '../services/deezer.service';
 import { MoodplayService } from '../services/moodplay.service';
 import { ArtistCoords, TrackCoords, Mood } from '../shared/models';
-import { AutoDj } from 'auto-dj';
+import { AutoDj, DecisionType } from 'auto-dj';
 
 @Injectable()
 export class PlayerService  {
@@ -11,7 +11,8 @@ export class PlayerService  {
 
   constructor(private deezer: DeezerService,
       private moodplayService: MoodplayService) {
-    this.dj = new AutoDj();
+    this.dj = new AutoDj({decisionType:DecisionType.Default,
+      defaultTransition:TransitionType.Beatmatch});
   }
 
   async transitionToArtist(artist: ArtistCoords) {
