@@ -39,6 +39,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
     d3.select('svg').selectAll('*').remove();
+    d3.select('div').selectAll('*').remove();
     if (changes['selectionInput'].currentValue == 'play')
       this.enterPlay();
     if (changes['selectionInput'].currentValue == 'artists')
