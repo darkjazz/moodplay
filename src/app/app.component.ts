@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class AppComponent {
   title = 'Moodplay';
-  selectionVariable = 'artists';
+  selectionVariable = 'play';
 
   onSelected(text: string) {
     this.selectionVariable = text;
