@@ -5,7 +5,7 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
 import { Artist, Coords, Track, TrackCoords, ArtistCoords,
-  Limits, Mood, User, Party, UserCoords } from '../shared/models';
+  Limits, Mood, User, Party, UserCoords, Features } from '../shared/models';
 import { generateName, getUserGuid } from '../shared/util';
 import { Config } from '../shared/config';
 
@@ -84,9 +84,9 @@ export class MoodplayService {
       .catch(this.handleError)
   }
 
-  public getFeaturesFromAudio(audioUri: string): Promise<any> {
-    var param = `/${ audioUri }`;
-    return this.http.get(Config.server + Config.moodplay + '/get_preview_features/' + param)
+  public getFeaturesFromAudio(audioUri: string): Promise<Features> {
+    var param = `/${ btoa(audioUri) }`;
+    return this.http.get(Config.server + Config.moodplay + '/get_track_features_by_uri' + param)
       .toPromise()
       .then((res:Response) => {
         return res.json();

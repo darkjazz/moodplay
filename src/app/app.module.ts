@@ -12,6 +12,7 @@ import { Menu } from './components/menu.component';
 import { MoodplayService } from './services/moodplay.service';
 import { DeezerService } from './services/deezer.service';
 import { PlayerService } from './services/player.service';
+import { FeatureService } from './services/feature.service';
 import { GraphicsComponent } from './components/graphics.component';
 
 @NgModule({
@@ -32,7 +33,7 @@ import { GraphicsComponent } from './components/graphics.component';
     OverlayModule,
     PortalModule
   ],
-  providers: [ MoodplayService, DeezerService, PlayerService ],
+  providers: [ MoodplayService, DeezerService, PlayerService, FeatureService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
