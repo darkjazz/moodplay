@@ -201,8 +201,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
   showLocation(polygon) {
     var mood = this.moods[this.points.indexOf(polygon.data)];
-    var left = (event.pageX-30)+"px";
-    var top = (event.pageY-40)+"px";
+    var left = ((<any>event).pageX-30)+"px";
+    var top = ((<any>event).pageY-40)+"px";
     var labelColor = this.color(polygon.angle);
     this.label
       .style("visibility", "visible")

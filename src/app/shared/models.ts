@@ -77,3 +77,19 @@ export class Party{
   owner_id: string;
   users: User[];
 }
+
+export interface Features {
+  beats: Beat[],
+  key: string,
+  loudness: Feature[]
+}
+
+export interface Beat {
+  start: number,
+  position: number
+}
+
+export interface Feature {
+  start: number,
+  value: number
+}
