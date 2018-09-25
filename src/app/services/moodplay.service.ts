@@ -4,7 +4,9 @@ import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
-import { Artist, Coords, Track, TrackCoords, ArtistCoords, Limits, Mood } from '../shared/models';
+import { Artist, Coords, Track, TrackCoords, ArtistCoords,
+  Limits, Mood, User, Party, UserCoords } from '../shared/models';
+import { generateName, getUserGuid } from '../shared/util';
 import { Config } from '../shared/config';
 
 @Injectable()
@@ -56,6 +58,30 @@ export class MoodplayService {
         return res.json() as Mood[];
       })
       .catch(this.handleError);
+  }
+
+  public addUser(partyID?: string, name?: string): Promise<User> {
+    var uaid = getUserGuid();
+    partyID = partyID ? partyID : Config.globalPartyID;
+    name = name ? name : generateName();
+    var params = `/${ partyID }/${ uaid }/${ name }`;
+    return this.http.get(Config.server + Config.user + '/add_user' + params)
+      .toPromise()
+      .then((res:Response) => {
+        return res.json() as User;
+      })
+      .catch(this.handleError)
+  }
+
+  public addUserCoordinates(userID: string, valence: number, arousal: number, partyID?: string): Promise<Party>{
+    var partyID = partyID ? partyID : Config.globalPartyID;
+    var params = `/${ partyID }/${ userID }/${ valence }/${ arousal }`;
+    return this.http.get(Config.server + Config.user + '/add_user_coordinates' + params)
+      .toPromise()
+      .then((res:Response) => {
+        return res.json() as Party;
+      })
+      .catch(this.handleError)
   }
 
   public getFeaturesFromAudio(audioUri: string): Promise<any> {

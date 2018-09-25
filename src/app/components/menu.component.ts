@@ -13,6 +13,7 @@ interface MenuOverlayConfig {
 }
 
 const ITEMS = [
+  { "text": "play", "icon": "touch_app" },
   { "text": "artists", "icon": "record_voice_over" },
   { "text": "tracks", "icon": "music_video" },
   { "text": "moods", "icon": "mood" },
@@ -54,6 +55,9 @@ export class Menu {
   select(text: string) {
     var viewPortal;
     switch(text) {
+      case "play":
+        this.enterPlay();
+        break;
       case "artists":
         this.showArtists();
         break;
@@ -67,6 +71,10 @@ export class Menu {
         this.gotoGithub();
         break;
     }
+  }
+
+  enterPlay() {
+    this.selectionEvent.emit('play')
   }
 
   showArtists() {

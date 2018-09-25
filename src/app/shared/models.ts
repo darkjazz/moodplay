@@ -50,6 +50,30 @@ export class Limits{
 
 export class Mood{
   label: string;
-  valence: Number;
-  arousal: Number;
+  valence: number;
+  arousal: number;
+}
+
+export class UserCoords{
+  valence: number;
+  arousal: number;
+  date: string;
+}
+
+export class User{
+  id: string;
+  uaid: string;
+  uri: string;
+  name: string;
+  updated: string;
+  current_coords: UserCoords;
+  history: UserCoords[];
+}
+
+export class Party{
+  id: string;
+  uri: string;
+  updated: string;
+  owner_id: string;
+  users: User[];
 }
