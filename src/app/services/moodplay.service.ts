@@ -20,7 +20,7 @@ export class MoodplayService {
   constructor(private http: Http) { }
 
   public initSocket(): void {
-    this.socket = socketIo(Config.server);
+    this.socket = socketIo(Config.server + '/global');
   }
 
   public sendUserCoordinates(userID: string, valence: number, arousal: number, partyID?: string): void {

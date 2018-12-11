@@ -4,6 +4,8 @@ import { PlayerService } from '../services/player.service';
 import { ArtistCoords, TrackCoords, Mood, User, Party } from '../shared/models';
 import * as d3 from "d3";
 
+const TIME_LIMIT = 10000;
+
 @Component({
   moduleId: module.id,
   selector: 'graphics',
@@ -165,11 +167,6 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .selectAll("path")
       .data(voronoi.polygons(this.points))
       .enter().append("path")
-        // .attr("fill", d => {
-        //   var coords = this.fragments[this.points.indexOf(d.data)];
-        //   d.angle = Math.atan2(coords.arousal, coords.valence);
-        //   return this.color(d.angle)
-        // })
         .attr("stroke", d => {
           var coords = this.moods[this.points.indexOf(d.data)];
           d.angle = Math.atan2(coords.arousal, coords.valence);
@@ -178,18 +175,6 @@ export class GraphicsComponent implements OnInit, OnChanges {
         })
         .attr("opacity", 0)
         .attr("cursor", "pointer")
-        // .on("mouseover", d => {
-        //   this.svg.selectAll("path").filter(node => {
-        //     return (node == d)
-        //   }).transition().duration(200)
-        //   .attr("opacity", 0.73)
-        // })
-        // .on("mouseout", d => {
-        //   this.svg.selectAll("path").filter(node => {
-        //     return (node == d)
-        //   }).transition().duration(200)
-        //   .attr("opacity", 0.47)
-        // })
         .on("click", d => this.showLocation(d))
         .call(this.redrawPolygon);
 
@@ -305,7 +290,9 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
   displayPartyUsers() {
     if (this.party) {
-      var users = (<any>Object).values(this.party.users).filter(user => { return user.id != this.user.id });
+      var users = (<any>Object).values(this.party.users).filter(user => {
+        return user.id != this.user.id && Date.now() - user.current_coords.date < TIME_LIMIT
+      });
       if (this.others) { this.others.remove() }
       this.others = this.svg.selectAll(".label")
 			   .data(users)
@@ -313,7 +300,6 @@ export class GraphicsComponent implements OnInit, OnChanges {
 	       .text( u => {
            u.point = this.fromMoodToPoint(u.current_coords.valence, u.current_coords.arousal);
            var angle = Math.atan2(u.current_coords.arousal, u.current_coords.valence);
-           console.log(angle);
            u.color = this.color( angle + Math.PI );
            return u.name
          })
