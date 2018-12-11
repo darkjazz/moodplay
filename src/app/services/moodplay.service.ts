@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
+import { Observer } from 'rxjs/Observer';
+
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
@@ -9,9 +11,30 @@ import { Artist, Coords, Track, TrackCoords, ArtistCoords,
 import { generateName, getUserGuid } from '../shared/util';
 import { Config } from '../shared/config';
 
+import * as socketIo from 'socket.io-client';
+
 @Injectable()
 export class MoodplayService {
+  private socket;
+
   constructor(private http: Http) { }
+
+  public initSocket(): void {
+    this.socket = socketIo(Config.server);
+  }
+
+  public sendUserCoordinates(userID: string, valence: number, arousal: number, partyID?: string): void {
+    var partyID = partyID ? partyID : Config.globalPartyID;
+    this.socket.emit('user_coordinates', {
+      id: userID, valence: valence, arousal: arousal, partyID: partyID
+    });
+  }
+
+  public onPartyMessage(): Observable<Party> {
+    return new Observable<Party>(observer => {
+        this.socket.on('party_message', (data: Party) => observer.next(data));
+    });
+  }
 
   public getNearestTrack(valence: Number, arousal: Number): Promise<Track> {
     var params = `/${ valence }/${ arousal }`;
@@ -64,6 +87,7 @@ export class MoodplayService {
     var uaid = getUserGuid();
     partyID = partyID ? partyID : Config.globalPartyID;
     name = name ? name : generateName();
+    console.log(name);
     var params = `/${ partyID }/${ uaid }/${ name }`;
     return this.http.get(Config.server + Config.user + '/add_user' + params)
       .toPromise()
@@ -76,6 +100,7 @@ export class MoodplayService {
   public addUserCoordinates(userID: string, valence: number, arousal: number, partyID?: string): Promise<Party>{
     var partyID = partyID ? partyID : Config.globalPartyID;
     var params = `/${ partyID }/${ userID }/${ valence }/${ arousal }`;
+    console.log(Config.server + Config.user + '/add_user_coordinates' + params);
     return this.http.get(Config.server + Config.user + '/add_user_coordinates' + params)
       .toPromise()
       .then((res:Response) => {

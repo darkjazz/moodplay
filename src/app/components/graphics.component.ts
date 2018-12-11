@@ -31,15 +31,23 @@ export class GraphicsComponent implements OnInit, OnChanges {
   moodLeft;
   currentCoords;
   selectedLabel;
+  timeout;
+  fragments;
+  others;
+  ioConnection;
 
-  constructor(private moodplayService: MoodplayService,
-    private playerService: PlayerService, public renderer: Renderer) { }
+  constructor(
+    private moodplayService: MoodplayService,
+    private playerService: PlayerService,
+    public renderer: Renderer) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.initIoConnection();
+  }
 
   ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
     d3.select('svg').selectAll('*').remove();
-    d3.select('div').selectAll('*').remove();
+    //d3.select('div').selectAll('*').remove();
     if (changes['selectionInput'].currentValue == 'play')
       this.enterPlay();
     if (changes['selectionInput'].currentValue == 'artists')
@@ -48,6 +56,16 @@ export class GraphicsComponent implements OnInit, OnChanges {
       this.getTracks();
     if (changes['selectionInput'].currentValue == 'moods')
       this.getMoods();
+  }
+
+  initIoConnection() {
+    this.moodplayService.initSocket();
+
+    this.ioConnection = this.moodplayService.onPartyMessage()
+      .subscribe((party: Party) => {
+        this.party = party;
+        this.displayPartyUsers();
+      });
   }
 
   enterPlay(): void {
@@ -95,6 +113,44 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
     this.color = d3.scaleSequential(d3.interpolateRainbow).domain([1 * Math.PI, -1 * Math.PI]);
 
+    var fragments = [];
+
+    Array.from({length: 1200}, () => {
+       fragments.push({ valence: (Math.random()-0.5)*2.0, arousal: (Math.random()-0.5)*2.0 } )
+    });
+
+    var b_points = fragments.map( m => { var point = [
+        (m.valence + 1.0) * (this.width / 2),
+        (m.arousal * -1.0 + 1.0) * (this.height / 2)
+      ];
+      return point;
+    });
+
+    var b_voronoi = d3.voronoi(b_points)
+      .extent([[-1, -1], [this.width + 1, this.height + 1]]);
+
+    var background_polygon = this.svg.append("g")
+      .selectAll("path")
+      .data(b_voronoi.polygons(b_points))
+      .enter().append("path")
+        .attr("fill", d => {
+          var coords = fragments[b_points.indexOf(d.data)];
+          d.angle = Math.atan2(coords.arousal, coords.valence);
+          return this.color(d.angle)
+        })
+        .attr("stroke", d => {
+          var coords = fragments[b_points.indexOf(d.data)];
+          d.angle = Math.atan2(coords.arousal, coords.valence);
+          var color = d3.rgb(this.color(d.angle)).brighter(0.2);
+          return color;
+        })
+        .attr("opacity", d => {
+          var coords = fragments[b_points.indexOf(d.data)];
+          d.distance = Math.hypot(coords.valence, coords.arousal);
+          return d.distance
+        })
+        .call(this.redrawPolygon);
+
     this.points = this.moods.map( m => { var point = [
         (m.valence + 1.0) * (this.width / 2),
         (m.arousal * -1.0 + 1.0) * (this.height / 2)
@@ -109,54 +165,57 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .selectAll("path")
       .data(voronoi.polygons(this.points))
       .enter().append("path")
-        .attr("fill", d => {
+        // .attr("fill", d => {
+        //   var coords = this.fragments[this.points.indexOf(d.data)];
+        //   d.angle = Math.atan2(coords.arousal, coords.valence);
+        //   return this.color(d.angle)
+        // })
+        .attr("stroke", d => {
           var coords = this.moods[this.points.indexOf(d.data)];
           d.angle = Math.atan2(coords.arousal, coords.valence);
-          if (d.angle == 0) return "rgb(100, 156, 100)"
-          else return this.color(d.angle)
+          d.distance = Math.hypot(coords.valence, coords.arousal);
+          return this.color(d.angle)
         })
-        .attr("stroke", d => {
-          if (d.angle == 0) return "rgb(100, 156, 100)"
-          else return this.color(d.angle)
-        })
-        .attr("opacity", 0.4)
+        .attr("opacity", 0)
         .attr("cursor", "pointer")
-        .on("mouseover", d => {
-          this.svg.selectAll("path").filter(node => {
-            return (node == d)
-          }).transition().duration(200)
-          .attr("opacity", 0.8)
-        })
-        .on("mouseout", d => {
-          this.svg.selectAll("path").filter(node => {
-            return (node == d)
-          }).transition().duration(200)
-          .attr("opacity", 0.4)
-        })
+        // .on("mouseover", d => {
+        //   this.svg.selectAll("path").filter(node => {
+        //     return (node == d)
+        //   }).transition().duration(200)
+        //   .attr("opacity", 0.73)
+        // })
+        // .on("mouseout", d => {
+        //   this.svg.selectAll("path").filter(node => {
+        //     return (node == d)
+        //   }).transition().duration(200)
+        //   .attr("opacity", 0.47)
+        // })
         .on("click", d => this.showLocation(d))
         .call(this.redrawPolygon);
 
-    var link = this.svg.append("g")
-      .selectAll("line")
-      .data(voronoi.links(this.points))
-      .enter().append("line")
-      .attr("stroke", "#000")
-      .attr("stroke-opacity", 0.2)
-      .call(this.redrawLink);
-
-    var site = this.svg.append("g")
-      .selectAll("circle")
-      .data(this.points)
-      .enter().append("circle")
-      .attr("r", 2.5)
-      .call(this.redrawSite);
+    // var link = this.svg.append("g")
+    //   .selectAll("line")
+    //   .data(voronoi.links(this.points))
+    //   .enter().append("line")
+    //   .attr("stroke", "#ddd")
+    //   .attr("stroke-opacity", 0.8)
+    //   .call(this.redrawLink);
+    //
+    // var site = this.svg.append("g")
+    //   .selectAll("circle")
+    //   .data(this.points)
+    //   .enter().append("circle")
+    //   .attr("r", 5.5)
+    //   .attr("stroke", "#ddd")
+    //   .attr("stroke-opacity", 0.8)
+    //   .call(this.redrawSite);
 
     this.label = d3.select("body").append("div")
       .style("position", "absolute")
     	.style("z-index", "10")
     	.style("visibility", "hidden")
       .style("font-family", "Syncopate")
-      .style("font-size", "9pt")
+      .style("font-size", "14pt")
       .style("border", "2pt solid #aaa")
       .style("border-radius", "17px")
       .style("padding", "10px")
@@ -164,19 +223,19 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("opacity", 0.4)
       .on("mouseover", elem => { this.mouseOver(elem) })
       .on("mouseout", elem => { this.mouseOut(elem) })
-      .on("click", elem => { this.selectMood(elem) })
+      .on("click", elem => { this.selectMood(elem) });
 
-      this.selectedLabel = d3.select("body").append("div")
-        .style("position", "absolute")
-      	.style("z-index", "9")
-      	.style("visibility", "hidden")
-        .style("font-family", "Syncopate")
-        .style("font-size", "9pt")
-        .style("border", "2pt solid #333")
-        .style("border-radius", "17px")
-        .style("padding", "10px")
-        .style("text-transform", "capitalize")
-        .style("opacity", 0.8)
+    this.selectedLabel = d3.select("body").append("div")
+      .style("position", "absolute")
+    	.style("z-index", "9")
+    	.style("visibility", "hidden")
+      .style("font-family", "Syncopate")
+      .style("font-size", "14pt")
+      .style("border", "2pt solid #333")
+      .style("border-radius", "17px")
+      .style("padding", "10px")
+      .style("text-transform", "capitalize")
+      .style("opacity", 0.8)
 
   }
 
@@ -225,7 +284,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
   }
 
   mouseOut(elem) {
-    this.label.style("opacity", 0.4)
+    this.label.style("opacity", 0.3)
   }
 
   selectMood(elem) {
@@ -239,12 +298,55 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("left", this.currentCoords.left)
       .style("background-color", "#333")
       .style("color", this.currentCoords.color)
-      .text(this.currentCoords.mood.label);
+      .text(this.user.name);
     this.label.style("visibility", "hidden");
-    this.moodplayService.addUserCoordinates(this.user.id, valence, arousal).then(party => {
-      this.party = party;
-      console.log(this.party)
-    });
+    this.moodplayService.sendUserCoordinates(this.user.id, valence, arousal);
+  }
+
+  displayPartyUsers() {
+    if (this.party) {
+      var users = (<any>Object).values(this.party.users).filter(user => { return user.id != this.user.id });
+      if (this.others) { this.others.remove() }
+      this.others = this.svg.selectAll(".label")
+			   .data(users)
+			   .enter().append("text")
+	       .text( u => {
+           u.point = this.fromMoodToPoint(u.current_coords.valence, u.current_coords.arousal);
+           var angle = Math.atan2(u.current_coords.arousal, u.current_coords.valence);
+           console.log(angle);
+           u.color = this.color( angle + Math.PI );
+           return u.name
+         })
+         .style("position", "absolute")
+         .style("z-index", "9")
+         .style("font-family", "Nunito")
+         .style("font-size", "17pt")
+         .attr("border", "2pt solid #333")
+         .attr("border-radius", "17px")
+         .style("padding", "7px")
+         .style("text-transform", "capitalize")
+         .style("opacity", 0.8)
+         .attr("y", u => u.point.top )
+         .attr("x", u => u.point.left )
+         .attr("fill", u => u.color )
+         .attr("stroke", "#000")
+         .attr("stroke-opacity", 1.0)
+
+    }
+  }
+
+  fromMoodToPoint(valence, arousal) {
+    var point = { left: 0, top: 0 };
+    point.left = (valence + 1.0) * (this.width / 2);
+    point.top = (arousal * -1.0 + 1.0) * (this.height / 2);
+    return point;
+  }
+
+  fromPointToMood(x, y) {
+    var mood = { valence: 0, arousal: 0 };
+    mood.valence = x / (this.width / 2.0) - 1.0;
+    mood.arousal = (y / (this.height / 2.0) - 1.0) * -1.0;
+    return mood;
   }
 
   initialiseArtists(): void {
