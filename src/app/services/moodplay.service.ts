@@ -36,6 +36,12 @@ export class MoodplayService {
     });
   }
 
+  public onAverageCoordinates(): Observable<Coords> {
+    return new Observable<Coords>(observer => {
+        this.socket.on('average_coordinates', (data: Coords) => observer.next(data));
+    });
+  }
+
   public getNearestTrack(valence: Number, arousal: Number): Promise<Track> {
     var params = `/${ valence }/${ arousal }`;
     return this.http.get(Config.server + Config.moodplay + '/get_nearest_track' + params)

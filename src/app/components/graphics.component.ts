@@ -1,10 +1,11 @@
 import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef, Renderer } from "@angular/core";
 import { MoodplayService } from '../services/moodplay.service';
 import { PlayerService } from '../services/player.service';
-import { ArtistCoords, TrackCoords, Mood, User, Party } from '../shared/models';
+import { ArtistCoords, TrackCoords, Coords, Mood, User, Party } from '../shared/models';
 import * as d3 from "d3";
 
 const TIME_LIMIT = 10000;
+const COORDS_HISTORY_SIZE = 23;
 
 @Component({
   moduleId: module.id,
@@ -20,6 +21,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
   moods: Mood[];
   user: User;
   party: Party;
+  average_coords: Coords[];
 
   svg;
   width;
@@ -36,7 +38,9 @@ export class GraphicsComponent implements OnInit, OnChanges {
   timeout;
   fragments;
   others;
-  ioConnection;
+  ioPartyMessage;
+  ioCoordinatesMessage;
+  playerCursor;
 
   constructor(
     private moodplayService: MoodplayService,
@@ -44,11 +48,13 @@ export class GraphicsComponent implements OnInit, OnChanges {
     public renderer: Renderer) { }
 
   ngOnInit(): void {
+    this.average_coords = new Array();
     this.initIoConnection();
   }
 
   ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
     d3.select('svg').selectAll('*').remove();
+    if (this.selectedLabel) { this.selectedLabel.remove(); }
     //d3.select('div').selectAll('*').remove();
     if (changes['selectionInput'].currentValue == 'play')
       this.enterPlay();
@@ -63,10 +69,18 @@ export class GraphicsComponent implements OnInit, OnChanges {
   initIoConnection() {
     this.moodplayService.initSocket();
 
-    this.ioConnection = this.moodplayService.onPartyMessage()
+    this.ioPartyMessage = this.moodplayService.onPartyMessage()
       .subscribe((party: Party) => {
         this.party = party;
         this.displayPartyUsers();
+      });
+    this.ioCoordinatesMessage = this.moodplayService.onAverageCoordinates()
+      .subscribe((coords: Coords) => {
+        if (this.average_coords.length == COORDS_HISTORY_SIZE) {
+          this.average_coords.shift()
+        }
+        this.average_coords.push(coords);
+        this.displayPlayerCursor(coords);
       });
   }
 
@@ -222,6 +236,20 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("text-transform", "capitalize")
       .style("opacity", 0.8)
 
+    this.playerCursor = this.svg.insert("circle", "rect")
+      .attr("cx", this.width / 2)
+      .attr("cy", this.height / 2)
+      .attr("r", 20.0)
+      .style("stroke", "#000")
+      .style("stroke-width", 3.0)
+      .style("stroke-opacity", 0.7)
+      .style("fill-opacity", 0)
+      // .transition()
+      //   .duration(2000)
+      //   .ease(Math.sqrt)
+      //   .attr("r", 100)
+      //   .style("stroke-opacity", 1e-6)
+
   }
 
   redrawPolygon(polygon) {
@@ -319,6 +347,14 @@ export class GraphicsComponent implements OnInit, OnChanges {
          .attr("stroke-opacity", 1.0)
 
     }
+  }
+
+  displayPlayerCursor(coords: Coords) {
+    var point = this.fromMoodToPoint(coords.valence, coords.arousal);
+    console.log(point);
+    this.playerCursor.transition().duration(3000)
+      .attr("cx", point.left)
+      .attr("cy", point.top);
   }
 
   fromMoodToPoint(valence, arousal) {
