@@ -6,6 +6,7 @@ import * as d3 from "d3";
 
 const TIME_LIMIT = 10000;
 const COORDS_HISTORY_SIZE = 23;
+const TDUR = 10000;
 
 @Component({
   moduleId: module.id,
@@ -307,12 +308,15 @@ export class GraphicsComponent implements OnInit, OnChanges {
     // var coords = { valence: valence, arousal: arousal };
     this.selectedLabel
       .style("visibility", "visible")
+      .style("opacity", 0.9)
       .style("top", this.currentCoords.top)
       .style("left", this.currentCoords.left)
       .style("background-color", "#333")
       .style("color", this.currentCoords.color)
       .text(this.user.name);
     this.label.style("visibility", "hidden");
+    this.selectedLabel.transition().duration(TDUR).ease(Math.sqrt)
+      .style("opacity", 1e-6);
     this.moodplayService.sendUserCoordinates(this.user.id, valence, arousal);
   }
 
@@ -339,13 +343,15 @@ export class GraphicsComponent implements OnInit, OnChanges {
          .attr("border-radius", "17px")
          .style("padding", "7px")
          .style("text-transform", "capitalize")
-         .style("opacity", 0.8)
+         .style("opacity", 1.0)
          .attr("y", u => u.point.top )
          .attr("x", u => u.point.left )
          .attr("fill", u => u.color )
          .attr("stroke", "#000")
          .attr("stroke-opacity", 1.0)
-
+         // .transition().duration(TDUR)
+         //  .attr("stroke-opacity", 1e-6)
+         //  .style("opacity", 1e-6);
     }
   }
 
