@@ -315,8 +315,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("color", this.currentCoords.color)
       .text(this.user.name);
     this.label.style("visibility", "hidden");
-    this.selectedLabel.transition().duration(TDUR).ease(Math.sqrt)
-      .style("opacity", 1e-6);
+    // this.selectedLabel.transition().duration(TDUR).ease(Math.sqrt)
+    //   .style("opacity", 1e-6);
     this.moodplayService.sendUserCoordinates(this.user.id, valence, arousal);
   }
 
@@ -357,7 +357,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
   displayPlayerCursor(coords: Coords) {
     var point = this.fromMoodToPoint(coords.valence, coords.arousal);
-    console.log(point);
+    // console.log(point);
     this.playerCursor.transition().duration(3000)
       .attr("cx", point.left)
       .attr("cy", point.top);
