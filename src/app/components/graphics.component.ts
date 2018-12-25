@@ -7,6 +7,10 @@ import * as d3 from "d3";
 const TIME_LIMIT = 10000;
 const COORDS_HISTORY_SIZE = 23;
 const TDUR = 10000;
+const N_CIRCLES = 23;
+
+const pi_rng = 2 * Math.PI;
+const pi_rng_inv = 1 / pi_rng;
 
 @Component({
   moduleId: module.id,
@@ -229,27 +233,42 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("position", "absolute")
     	.style("z-index", "9")
     	.style("visibility", "hidden")
-      .style("font-family", "Syncopate")
-      .style("font-size", "14pt")
+      .style("font-family", "Nunito")
+      .style("font-size", "17pt")
       .style("border", "2pt solid #333")
-      .style("border-radius", "17px")
-      .style("padding", "10px")
+      .style("border-radius", "13px")
+      .style("padding", "5px")
       .style("text-transform", "capitalize")
       .style("opacity", 0.8)
 
-    this.playerCursor = this.svg.insert("circle", "rect")
-      .attr("cx", this.width / 2)
-      .attr("cy", this.height / 2)
-      .attr("r", 20.0)
-      .style("stroke", "#000")
+    var cursorColors = Array.from({length: N_CIRCLES}, (e, i) => {
+      return {
+        x: this.width / 2,
+        y: this.height / 2,
+        color: 2 * Math.PI / N_CIRCLES * i,
+        radius: 2.0 * i
+      }
+    });
+
+    this.playerCursor = this.svg.selectAll("circle")
+      .data(cursorColors)
+      .enter()
+      .append("circle")
       .style("stroke-width", 3.0)
       .style("stroke-opacity", 0.7)
       .style("fill-opacity", 0)
-      // .transition()
-      //   .duration(2000)
-      //   .ease(Math.sqrt)
-      //   .attr("r", 100)
-      //   .style("stroke-opacity", 1e-6)
+      .style("stroke", d => { return this.color(d.color) })
+      .attr("r", d => { return d.radius })
+      .call(this.redrawCursor);
+
+    // this.playerCursor = this.svg.insert("circle", "rect")
+    //   .attr("cx", this.width / 2)
+    //   .attr("cy", this.height / 2)
+    //   .attr("r", 20.0)
+    //   .style("stroke", "#000")
+    //   .style("stroke-width", 3.0)
+    //   .style("stroke-opacity", 0.7)
+    //   .style("fill-opacity", 0)
 
   }
 
@@ -270,6 +289,12 @@ export class GraphicsComponent implements OnInit, OnChanges {
     site
       .attr("cx", function(d) { return d[0]; })
       .attr("cy", function(d) { return d[1]; });
+  }
+
+  redrawCursor(cursor) {
+    cursor
+      .attr("cx", d => { return d.x })
+      .attr("cy", d => { return d.y })
   }
 
   showLocation(polygon) {
@@ -339,6 +364,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
          .style("z-index", "9")
          .style("font-family", "Nunito")
          .style("font-size", "17pt")
+         .style("text-anchor", "middle")
          .attr("border", "2pt solid #333")
          .attr("border-radius", "17px")
          .style("padding", "7px")
@@ -358,9 +384,18 @@ export class GraphicsComponent implements OnInit, OnChanges {
   displayPlayerCursor(coords: Coords) {
     var point = this.fromMoodToPoint(coords.valence, coords.arousal);
     // console.log(point);
-    this.playerCursor.transition().duration(3000)
+    this.playerCursor.transition().duration(3000).ease(d3.easeLinear)
+      .style("stroke", d => {
+        d.color = this.wrapColor(d.color - (Math.PI * 0.7) );
+        return this.color(d.color)
+      })
       .attr("cx", point.left)
       .attr("cy", point.top);
+
+  }
+
+  wrapColor(color) {
+    return color - pi_rng * Math.floor(color * pi_rng_inv)
   }
 
   fromMoodToPoint(valence, arousal) {
@@ -429,6 +464,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
     this.svg.append("g").selectAll("circle").data(this.tracks)
     .enter()
     .append("circle")
+      .style("z-index", "-1")
       .attr("fill", d => { return this.color(d.angle = Math.atan2(d.arousal, d.valence)) })
       .attr("cx", d => { return Math.cos(d.angle) * (this.width / Math.SQRT2 + 30) + 480 })
       .attr("cy", d => { return Math.sin(d.angle) * (this.height / Math.SQRT2 + 30) + 480 })
