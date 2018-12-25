@@ -4,10 +4,12 @@ import { PlayerService } from '../services/player.service';
 import { ArtistCoords, TrackCoords, Coords, Mood, User, Party } from '../shared/models';
 import * as d3 from "d3";
 
-const TIME_LIMIT = 10000;
+const TIME_LIMIT = 11000;
 const COORDS_HISTORY_SIZE = 23;
 const TDUR = 10000;
 const N_CIRCLES = 23;
+const BRIGHT = 0.7;
+const DARK = 1.0 ;
 
 const pi_rng = 2 * Math.PI;
 const pi_rng_inv = 1 / pi_rng;
@@ -246,7 +248,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
         x: this.width / 2,
         y: this.height / 2,
         color: 2 * Math.PI / N_CIRCLES * i,
-        radius: 2.0 * i
+        radius: 2.0 * i,
+        opacity: 1.0 - (0.5 / N_CIRCLES * i)
       }
     });
 
@@ -255,10 +258,10 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .enter()
       .append("circle")
       .style("stroke-width", 3.0)
-      .style("stroke-opacity", 0.7)
+      .style("stroke-opacity", d => d.opacity)
       .style("fill-opacity", 0)
-      .style("stroke", d => { return this.color(d.color) })
-      .attr("r", d => { return d.radius })
+      .style("stroke", d => { return d3.rgb(this.color(d.color)).brighter(BRIGHT) })
+      .attr("r", d => d.radius)
       .call(this.redrawCursor);
 
     // this.playerCursor = this.svg.insert("circle", "rect")
@@ -386,8 +389,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
     // console.log(point);
     this.playerCursor.transition().duration(3000).ease(d3.easeLinear)
       .style("stroke", d => {
-        d.color = this.wrapColor(d.color - (Math.PI * 0.7) );
-        return this.color(d.color)
+        d.color = this.wrapColor(d.color - (Math.PI * 0.43576) );
+        return d3.rgb(this.color(d.color)).darker(DARK)
       })
       .attr("cx", point.left)
       .attr("cy", point.top);
