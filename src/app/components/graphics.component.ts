@@ -82,11 +82,11 @@ export class GraphicsComponent implements OnInit, OnChanges {
         this.displayPartyUsers();
       });
     this.ioCoordinatesMessage = this.moodplayService.onAverageCoordinates()
-      .subscribe((coords: Coords) => {
+      .subscribe((coords: TrackCoords) => {
         if (this.average_coords.length == COORDS_HISTORY_SIZE) {
           this.average_coords.shift()
         }
-        this.average_coords.push(coords);
+        this.average_coords.push({ valence: coords.valence, arousal: coords.arousal, dominance: 0 });
         this.displayPlayerCursor(coords);
       });
   }
@@ -95,7 +95,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
     this.moodplayService.addUser()
       .then(user => {
         this.user = user;
-        console.log(user);
+        // console.log(user);
         this.moodplayService.getMoods()
           .then(moods => {
             this.moods = moods;
@@ -384,7 +384,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
     }
   }
 
-  displayPlayerCursor(coords: Coords) {
+  displayPlayerCursor(coords: TrackCoords) {
     var point = this.fromMoodToPoint(coords.valence, coords.arousal);
     // console.log(point);
     this.playerCursor.transition().duration(3000).ease(d3.easeLinear)
@@ -394,7 +394,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
       })
       .attr("cx", point.left)
       .attr("cy", point.top);
-
+    // this.playerService.transitionToTrack(coords);
   }
 
   wrapColor(color) {

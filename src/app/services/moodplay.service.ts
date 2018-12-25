@@ -36,9 +36,9 @@ export class MoodplayService {
     });
   }
 
-  public onAverageCoordinates(): Observable<Coords> {
-    return new Observable<Coords>(observer => {
-        this.socket.on('average_coordinates', (data: Coords) => observer.next(data));
+  public onAverageCoordinates(): Observable<TrackCoords> {
+    return new Observable<TrackCoords>(observer => {
+        this.socket.on('average_coordinates', (data: TrackCoords) => observer.next(data));
     });
   }
 
