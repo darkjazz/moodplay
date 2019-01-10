@@ -51,7 +51,6 @@ export class FeatureService implements DjFeatureService {
     if (!this.uriToFeatures.has(audioUri)) {
       this.uriToFeatures.set(audioUri, await this.moodplayService.getFeaturesFromAudio(audioUri));
     }
-    console.log(this.uriToFeatures.get(audioUri))
     return this.uriToFeatures.get(audioUri);
   }
 

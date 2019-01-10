@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef, Renderer } from "@angular/core";
+import { filter } from 'rxjs/operators';
 import { MoodplayService } from '../services/moodplay.service';
 import { PlayerService } from '../services/player.service';
 import { ArtistCoords, TrackCoords, Coords, Mood, User, Party } from '../shared/models';
@@ -82,6 +83,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
         this.displayPartyUsers();
       });
     this.ioCoordinatesMessage = this.moodplayService.onAverageCoordinates()
+      .pipe(filter((v,i) => i % 3 === 0))
       .subscribe((coords: TrackCoords) => {
         if (this.average_coords.length == COORDS_HISTORY_SIZE) {
           this.average_coords.shift()
@@ -394,7 +396,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
       })
       .attr("cx", point.left)
       .attr("cy", point.top);
-    // this.playerService.transitionToTrack(coords);
+    this.playerService.transitionToTrack(coords);
   }
 
   wrapColor(color) {

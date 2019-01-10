@@ -24,6 +24,8 @@ export class PlayerService  {
   }
 
   async transitionToTrack(track: TrackCoords) {
+    console.log(track.uri)
+    await this.dj.isReady();
     this.dj.transitionToTrack(track.uri);
   }
 
