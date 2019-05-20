@@ -8,7 +8,7 @@ import * as d3 from "d3";
 const TIME_LIMIT = 11000;
 const COORDS_HISTORY_SIZE = 23;
 const TDUR = 10000;
-const N_CIRCLES = 23;
+const N_CIRCLES = 17;
 const BRIGHT = 0.7;
 const DARK = 1.0 ;
 
@@ -24,12 +24,14 @@ const pi_rng_inv = 1 / pi_rng;
 export class GraphicsComponent implements OnInit, OnChanges {
   @ViewChild('graph') private element: ElementRef;
   @Input() selectionInput: string;
+  @Input() activateSound: boolean;
   artists: ArtistCoords[];
   tracks: TrackCoords[];
   moods: Mood[];
   user: User;
   party: Party;
-  average_coords: Coords[];
+  trackCoords: Coords[];
+  cursorCoords: Coords;
 
   svg;
   width;
@@ -47,7 +49,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
   fragments;
   others;
   ioPartyMessage;
-  ioCoordinatesMessage;
+  ioTrackCoordinates;
+  ioCursorMessage;
   playerCursor;
 
   constructor(
@@ -56,7 +59,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
     public renderer: Renderer) { }
 
   ngOnInit(): void {
-    this.average_coords = new Array();
+    this.trackCoords = new Array();
     this.initIoConnection();
   }
 
@@ -82,15 +85,20 @@ export class GraphicsComponent implements OnInit, OnChanges {
         this.party = party;
         this.displayPartyUsers();
       });
-    this.ioCoordinatesMessage = this.moodplayService.onAverageCoordinates()
-      .pipe(filter((v,i) => i % 3 === 0))
+    this.ioTrackCoordinates = this.moodplayService.onTrackCoordinates()
+      // .pipe(filter((v,i) => i % 3 === 0))
       .subscribe((coords: TrackCoords) => {
-        if (this.average_coords.length == COORDS_HISTORY_SIZE) {
-          this.average_coords.shift()
+        if (this.trackCoords.length == COORDS_HISTORY_SIZE) {
+          this.trackCoords.shift()
         }
-        this.average_coords.push({ valence: coords.valence, arousal: coords.arousal, dominance: 0 });
-        this.displayPlayerCursor(coords);
+        this.trackCoords.push({ valence: coords.valence, arousal: coords.arousal, dominance: 0 });
+        // this.displayPlayerCursor(coords);
       });
+    this.ioCursorMessage = this.moodplayService.onCursorMessage()
+      .subscribe((coords: Coords) => {
+        this.cursorCoords = coords;
+        this.displayPlayerCursor(coords);
+      })
   }
 
   enterPlay(): void {
@@ -259,7 +267,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .data(cursorColors)
       .enter()
       .append("circle")
-      .style("stroke-width", 3.0)
+      .style("stroke-width", 5.0)
       .style("stroke-opacity", d => d.opacity)
       .style("fill-opacity", 0)
       .style("stroke", d => { return d3.rgb(this.color(d.color)).brighter(BRIGHT) })
@@ -386,17 +394,22 @@ export class GraphicsComponent implements OnInit, OnChanges {
     }
   }
 
-  displayPlayerCursor(coords: TrackCoords) {
+  displayPlayerCursor(coords: Coords) {
     var point = this.fromMoodToPoint(coords.valence, coords.arousal);
-    // console.log(point);
-    this.playerCursor.transition().duration(3000).ease(d3.easeLinear)
+    var current = { left: this.playerCursor.attr("cx"), top: this.playerCursor.attr("cy") }
+    var distance = Math.sqrt(
+        Math.pow(current.left - point.left, 2) + Math.pow(current.top - point.top, 2)
+    );
+    var velocity = this.width / 4000;
+    var duration = distance / velocity * 10;
+    this.playerCursor.selectAll("*").interrupt();
+    this.playerCursor.transition().duration(duration).ease(d3.easeLinear)
       .style("stroke", d => {
         d.color = this.wrapColor(d.color - (Math.PI * 0.43576) );
         return d3.rgb(this.color(d.color)).darker(DARK)
       })
       .attr("cx", point.left)
       .attr("cy", point.top);
-    this.playerService.transitionToTrack(coords);
   }
 
   wrapColor(color) {

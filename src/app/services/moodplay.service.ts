@@ -36,10 +36,16 @@ export class MoodplayService {
     });
   }
 
-  public onAverageCoordinates(): Observable<TrackCoords> {
+  public onTrackCoordinates(): Observable<TrackCoords> {
     return new Observable<TrackCoords>(observer => {
-        this.socket.on('average_coordinates', (data: TrackCoords) => observer.next(data));
+        this.socket.on('track_coordinates', (data: TrackCoords) => observer.next(data));
     });
+  }
+
+  public onCursorMessage(): Observable<Coords> {
+    return new Observable<Coords>(observer => {
+      this.socket.on('cursor_coordinates', (data: Coords) => observer.next(data));
+    })
   }
 
   public getNearestTrack(valence: Number, arousal: Number): Promise<Track> {

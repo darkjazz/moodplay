@@ -14,12 +14,14 @@ import { DeezerService } from './services/deezer.service';
 import { PlayerService } from './services/player.service';
 import { FeatureService } from './services/feature.service';
 import { GraphicsComponent } from './components/graphics.component';
+import { EntryComponent } from './components/entry.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     Menu,
-    GraphicsComponent
+    GraphicsComponent,
+    EntryComponent
   ],
   imports: [
     BrowserModule,
@@ -34,6 +36,7 @@ import { GraphicsComponent } from './components/graphics.component';
     PortalModule
   ],
   providers: [ MoodplayService, DeezerService, PlayerService, FeatureService ],
+  entryComponents: [ EntryComponent ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

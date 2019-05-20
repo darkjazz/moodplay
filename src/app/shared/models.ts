@@ -67,6 +67,7 @@ export class User{
   name: string;
   updated: string;
   current_coords: UserCoords;
+  vote_length: Number;
   history: UserCoords[];
 }
 
