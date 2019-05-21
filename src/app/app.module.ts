@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatMenuModule, MatIconModule, MatButtonModule } from '@angular/material';
+import { MatMenuModule, MatIconModule, MatButtonModule, MatButtonToggleModule } from '@angular/material';
 import { BrowserAnimationsModule }  from '@angular/platform-browser/animations';
 import { OverlayModule }            from '@angular/cdk/overlay';
 import { PortalModule }             from '@angular/cdk/portal';
@@ -35,6 +35,7 @@ import { EntryComponent } from './components/entry.component';
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
+    MatButtonToggleModule,
     BrowserAnimationsModule,
     OverlayModule,
     PortalModule

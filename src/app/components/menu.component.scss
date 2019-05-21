@@ -2,10 +2,13 @@ mat-menu {
   float: right;
   color: #666;
   background-color: transparent;
+  z-index: 10;
 }
 
 mat-icon {
+  padding-top: 5px;
   padding-right: 5px;
+  font-size: 100%;
 }
 
 button {
@@ -14,8 +17,9 @@ button {
   color: #666;
   -webkit-transition: color .4s ease;
   transition: color .4s ease;
+  z-index: 10;
   &:hover {
-    color: #ddd;
+    color: #81ef0b;
   }
 }
 

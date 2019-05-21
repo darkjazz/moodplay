@@ -50,7 +50,7 @@ export class AppComponent {
     overlayRef.backdropClick().subscribe(_ => dialogRef.close());
     return dialogRef;
   }
-  
+
   play() {
     this.playerService.togglePlay();
   }

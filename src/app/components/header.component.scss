@@ -1,0 +1,22 @@
+#header{
+  width: 1067px;
+  display: inline-block;
+}
+
+.menu {
+  float: right;
+}
+
+button{
+  cursor: pointer;
+  color: #666;
+  -webkit-transition: color .4s ease;
+  transition: color .4s ease;
+  &:hover {
+    color: #81ef0b;
+  }
+}
+
+mat-icon{
+  font-size: 130%;
+}
