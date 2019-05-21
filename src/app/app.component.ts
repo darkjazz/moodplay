@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { MatMenuModule } from '@angular/material/menu';
 import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { MenuOverlayRef }   from './shared/overlayref';
 import { ComponentPortal }  from '@angular/cdk/portal';
 import { EntryComponent }    from './components/entry.component';
 import { User } from './shared/models';
-import { MoodplayService } from './services/moodplay.service';
+import { PlayerService } from './services/player.service';
 
 interface MenuOverlayConfig {
     panelClass?: string;
@@ -30,7 +29,7 @@ export class AppComponent {
 
   constructor(
     private overlay: Overlay,
-    private moodplayServive: MoodplayService
+    private playerService: PlayerService
   ) { }
 
   ngOnInit(): void {
@@ -50,6 +49,10 @@ export class AppComponent {
     overlayRef.attach(viewPortal);
     overlayRef.backdropClick().subscribe(_ => dialogRef.close());
     return dialogRef;
+  }
+  
+  play() {
+    this.playerService.togglePlay();
   }
 
   private createOverlay() {
