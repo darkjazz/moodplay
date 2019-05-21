@@ -1,8 +1,6 @@
 mat-menu {
-  float: right;
   color: #666;
   background-color: transparent;
-  z-index: 10;
 }
 
 mat-icon {
@@ -12,12 +10,10 @@ mat-icon {
 }
 
 button {
-  float: right;
   background-color: transparent !important;
   color: #666;
   -webkit-transition: color .4s ease;
   transition: color .4s ease;
-  z-index: 10;
   &:hover {
     color: #81ef0b;
   }

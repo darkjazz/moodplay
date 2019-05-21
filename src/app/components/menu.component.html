@@ -1,7 +1,9 @@
-<mat-menu #menu="matMenu" xPosition="before">
-  <button mat-menu-item>Change name</button>
-  <button mat-menu-item>Github</button>
-</mat-menu>
 <button mat-icon-button [matMenuTriggerFor]="menu">
-  <mat-icon>more_vert</mat-icon>
+  <mat-icon>menu</mat-icon>
 </button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>Change name</button>
+  <button mat-menu-item>Create party</button>
+  <button mat-menu-item>Help</button>
+  <button mat-menu-item>About</button>
+</mat-menu>

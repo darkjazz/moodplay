@@ -9,16 +9,15 @@ import { PlayerService } from '../services/player.service';
 export class HeaderComponent {
   title = 'moodplay';
   playerIcon = "play_circle_outline";
+  currentlyPlaying = "roots manuva: evil rabbit";
 
   constructor(
     private playerService: PlayerService
   ) { }
 
   play() {
-    if (this.playerIcon == "play_circle_outline")
-      this.playerIcon = "pause_circle_outline";
-    else
-      this.playerIcon = "play_circle_outline";
+    this.playerIcon = (this.playerIcon == "play_circle_outline") ?
+      this.playerIcon = "pause_circle_outline" : this.playerIcon = "play_circle_outline";
     this.playerService.togglePlay();
   }
 

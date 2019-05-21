@@ -16,6 +16,13 @@ const FRAG_SIZE = 1201;
 const pi_rng = 2 * Math.PI;
 const pi_rng_inv = 1 / pi_rng;
 
+const emoji = [
+  { name: "angry", valence: -1.0, arousal: 1.0 },
+  { name: "party", valence: 0.92, arousal: 1.0 },
+  { name: "sad", valence: -1.0, arousal: -0.84 },
+  { name: "smile", valence: 0.92, arousal: -0.84 }
+]
+
 @Component({
   moduleId: module.id,
   selector: 'graphics',
@@ -252,7 +259,27 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("border-radius", "13px")
       .style("padding", "5px")
       .style("text-transform", "capitalize")
-      .style("opacity", 0.8)
+      .style("opacity", 0.8);
+
+    this.svg.selectAll("image")
+      .data(emoji)
+      .enter()
+      .append("image")
+      .attr("x", d => {
+        var point = this.fromMoodToPoint(d.valence, d.arousal);
+        return point.left;
+      })
+      .attr("y", d => {
+        var point = this.fromMoodToPoint(d.valence, d.arousal);
+        return point.top;
+      })
+      .attr("width", 48)
+      .attr("height", 48)
+      .style("opacity", 0.5)
+      .attr("z-index", -10)
+      .attr("xlink:href", d => {
+        return "./assets/" + d.name + ".png";
+      })
 
     var cursorColors = Array.from({length: N_CIRCLES}, (e, i) => {
       return {
@@ -313,11 +340,13 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
   showLocation(polygon) {
     var mood = this.moods[this.points.indexOf(polygon.data)];
-    var left = ((<any>event).pageX-30)+"px";
-    var top = ((<any>event).pageY-40)+"px";
+    var left = ((<any>event).pageX-15)+"px";
+    var top = ((<any>event).pageY-20)+"px";
     var labelColor = this.color(polygon.angle);
+    this.label.selectAll("*").interrupt();
     this.label
       .style("visibility", "visible")
+      .style("opacity", 0.9)
       .style("left", left)
       .style("top", top)
       .style("background-color", "#333")
@@ -333,11 +362,11 @@ export class GraphicsComponent implements OnInit, OnChanges {
   }
 
   mouseOver(elem) {
-    this.label.style("opacity", 0.9)
+    this.label.transition().duration(100).ease(d3.easeLinear).style("opacity", 0.9)
   }
 
   mouseOut(elem) {
-    this.label.style("opacity", 0.3)
+    this.label.transition().duration(400).ease(d3.easeLinear).style("opacity", 0.0)
   }
 
   selectMood(elem) {
