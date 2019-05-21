@@ -275,7 +275,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
       })
       .attr("width", 48)
       .attr("height", 48)
-      .style("opacity", 0.5)
+      .style("opacity", 0.7)
       .attr("z-index", -10)
       .attr("xlink:href", d => {
         return "./assets/" + d.name + ".png";

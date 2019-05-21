@@ -1,7 +1,7 @@
 <button mat-icon-button [matMenuTriggerFor]="menu">
   <mat-icon>menu</mat-icon>
 </button>
-<mat-menu #menu="matMenu">
+<mat-menu #menu="matMenu" [class]="selection-menu" >
   <button mat-menu-item>Change name</button>
   <button mat-menu-item>Create party</button>
   <button mat-menu-item>Help</button>
