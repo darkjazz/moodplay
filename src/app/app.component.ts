@@ -25,7 +25,6 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'meeleolumäng';
   selectionVariable = 'play';
   user: User;
 

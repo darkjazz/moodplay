@@ -1,5 +1,5 @@
 import { Component, ViewChild, Injectable, Inject, Output, EventEmitter } from '@angular/core';
-import { MatSidenav }       from '@angular/material/sidenav';
+import { MatMenu }       from '@angular/material/menu';
 import { MatButton }        from '@angular/material/button';
 import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal }  from '@angular/cdk/portal';
@@ -33,7 +33,7 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
 })
 @Injectable()
 export class Menu {
-  @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild('sidenav') menu: MatMenu;
   // @ViewChild('navbtn') navbtn: MatButton;
   @Output() selectionEvent = new EventEmitter<string>();
   items: MenuItem[];
@@ -42,14 +42,6 @@ export class Menu {
     ITEMS.forEach(item => {
       this.items.push(item as MenuItem)
     })
-  }
-
-  open() {
-    this.sidenav.open();
-  }
-
-  close() {
-    this.sidenav.close();
   }
 
   select(text: string) {

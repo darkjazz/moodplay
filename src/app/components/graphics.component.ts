@@ -11,6 +11,7 @@ const TDUR = 10000;
 const N_CIRCLES = 17;
 const BRIGHT = 0.7;
 const DARK = 1.0 ;
+const FRAG_SIZE = 1201;
 
 const pi_rng = 2 * Math.PI;
 const pi_rng_inv = 1 / pi_rng;
@@ -148,7 +149,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
     var fragments = [];
 
-    Array.from({length: 1200}, () => {
+    Array.from({length: FRAG_SIZE}, () => {
        fragments.push({ valence: (Math.random()-0.5)*2.0, arousal: (Math.random()-0.5)*2.0 } )
     });
 
@@ -245,8 +246,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("position", "absolute")
     	.style("z-index", "9")
     	.style("visibility", "hidden")
-      .style("font-family", "Nunito")
-      .style("font-size", "17pt")
+      .style("font-family", "Syncopate")
+      .style("font-size", "14pt")
       .style("border", "2pt solid #333")
       .style("border-radius", "13px")
       .style("padding", "5px")

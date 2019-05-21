@@ -1,15 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 body {
   background-color: #222;
-  margin: 2em;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  /* background-image: url("./assets/fatou.jpg");   */
 }
 
 h1{
   color: #81ef0b;
-  font-family: "Syncopate" , sans-serif;
+  font-family: 'Baloo Bhai', cursive;
   font-size: 250%;
+  margin-left: 10px;
+  margin-top: -5px;
+  margin-bottom: -10px;
 }
