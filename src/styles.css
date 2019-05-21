@@ -8,8 +8,13 @@ body {
   /* background-image: url("./assets/fatou.jpg");   */
 }
 
-h1{
+h1, button {
   color: #81ef0b;
   font-family: "Syncopate" , sans-serif;
   font-size: 250%;
+}
+
+button {
+  background-color: #222;
+  border: none;
 }

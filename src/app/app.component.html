@@ -1,3 +1,7 @@
 <!-- <ml-menu (selectionEvent)="onSelected($event)"></ml-menu> -->
-<div id="header"><h1>{{ title }}</h1></div>
-<graphics [selectionInput]="selectionVariable" [activateSound]="false">
+<div id="header" fxLayout="row">
+  <h1 fxFlex="1 1 auto">{{ title }}</h1>
+  <span fxFlex="5 1 auto"></span>
+  <button fxFlex="1 1 auto" (click)="play()">play</button>
+</div>
+<graphics [selectionInput]="selectionVariable" [activateSound]="true">
