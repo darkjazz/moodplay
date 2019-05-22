@@ -330,26 +330,13 @@ export class GraphicsComponent implements OnInit, OnChanges {
          .attr("fill", u => u.color )
          .attr("stroke", "#000")
          .attr("stroke-opacity", 1.0)
-         // .transition().duration(TDUR)
-         //  .attr("stroke-opacity", 1e-6)
-         //  .style("opacity", 1e-6);
     }
   }
 
   displayPlayerCursor() {
     var point = this.fromMoodToPoint(this.coords.valence, this.coords.arousal);
-    var current = { left: this.playerCursor.attr("cx"), top: this.playerCursor.attr("cy") }
-    var distance = Math.sqrt(
-        Math.pow(current.left - point.left, 2) + Math.pow(current.top - point.top, 2)
-    );
-    var velocity = this.width / 4000;
-    var duration = distance / velocity * 10;
     this.playerCursor.selectAll("*").interrupt();
-    this.playerCursor.transition().duration(duration).ease(d3.easeLinear)
-      // .style("stroke", d => {
-      //   d.color = this.wrapColor(d.color - (Math.PI * 0.43576) );
-      //   return d3.rgb(this.color(d.color)).darker(DARK)
-      // })
+    this.playerCursor.transition().duration(this.party.update_rate * 1.1).ease(d3.easeLinear)
       .attr("cx", point.left)
       .attr("cy", point.top);
   }

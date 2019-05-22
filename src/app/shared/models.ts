@@ -76,6 +76,7 @@ export class Party{
   uri: string;
   updated: string;
   owner_id: string;
+  update_rate: number;
   users: User[];
 }
 
