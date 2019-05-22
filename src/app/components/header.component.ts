@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PlayerService } from '../services/player.service';
+import { Track } from '../shared/models';
 
 @Component({
   selector: 'header',
@@ -9,7 +10,7 @@ import { PlayerService } from '../services/player.service';
 export class HeaderComponent {
   title = 'moodplay';
   playerIcon = "play_circle_outline";
-  currentlyPlaying = "roots manuva: evil rabbit";
+  @Input() track: Track;
 
   constructor(
     private playerService: PlayerService

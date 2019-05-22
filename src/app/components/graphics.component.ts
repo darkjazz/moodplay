@@ -8,7 +8,7 @@ import * as d3 from "d3";
 const TIME_LIMIT = 11000;
 const COORDS_HISTORY_SIZE = 23;
 const TDUR = 10000;
-const N_CIRCLES = 17;
+const N_CIRCLES = 3;
 const BRIGHT = 0.7;
 const DARK = 1.0 ;
 const FRAG_SIZE = 1201;
@@ -18,9 +18,9 @@ const pi_rng_inv = 1 / pi_rng;
 
 const emoji = [
   { name: "angry", valence: -1.0, arousal: 1.0 },
-  { name: "party", valence: 0.92, arousal: 1.0 },
+  { name: "party", valence: 0.91, arousal: 1.0 },
   { name: "sad", valence: -1.0, arousal: -0.84 },
-  { name: "smile", valence: 0.92, arousal: -0.84 }
+  { name: "smile", valence: 0.91, arousal: -0.84 }
 ]
 
 @Component({
@@ -31,13 +31,10 @@ const emoji = [
 })
 export class GraphicsComponent implements OnInit, OnChanges {
   @ViewChild('graph') private element: ElementRef;
-  @Input() selectionInput: string;
-  @Input() activateSound: boolean;
-  artists: ArtistCoords[];
-  tracks: TrackCoords[];
+  @Input() coords: Coords;
+  @Input() party: Party;
+  @Input() user: User;
   moods: Mood[];
-  user: User;
-  party: Party;
   trackCoords: Coords[];
   cursorCoords: Coords;
 
@@ -68,73 +65,21 @@ export class GraphicsComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.trackCoords = new Array();
-    this.initIoConnection();
+    this.makeInterface();
   }
 
   ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
-    d3.select('svg').selectAll('*').remove();
-    if (this.selectedLabel) { this.selectedLabel.remove(); }
-    //d3.select('div').selectAll('*').remove();
-    if (changes['selectionInput'].currentValue == 'play')
-      this.enterPlay();
-    if (changes['selectionInput'].currentValue == 'artists')
-      this.getArtists();
-    if (changes['selectionInput'].currentValue == 'tracks')
-      this.getTracks();
-    if (changes['selectionInput'].currentValue == 'moods')
-      this.getMoods();
+    if (changes['coords'] && this.coords )
+      this.displayPlayerCursor();
+    if (changes['party'] && this.party )
+      this.displayPartyUsers();
   }
 
-  initIoConnection() {
-    this.moodplayService.initSocket();
-
-    this.ioPartyMessage = this.moodplayService.onPartyMessage()
-      .subscribe((party: Party) => {
-        this.party = party;
-        this.displayPartyUsers();
-      });
-    this.ioTrackCoordinates = this.moodplayService.onTrackCoordinates()
-      // .pipe(filter((v,i) => i % 3 === 0))
-      .subscribe((coords: TrackCoords) => {
-        if (this.trackCoords.length == COORDS_HISTORY_SIZE) {
-          this.trackCoords.shift()
-        }
-        this.trackCoords.push({ valence: coords.valence, arousal: coords.arousal, dominance: 0 });
-        // this.displayPlayerCursor(coords);
-      });
-    this.ioCursorMessage = this.moodplayService.onCursorMessage()
-      .subscribe((coords: Coords) => {
-        this.cursorCoords = coords;
-        this.displayPlayerCursor(coords);
-      })
-  }
-
-  enterPlay(): void {
-    this.moodplayService.addUser()
-      .then(user => {
-        this.user = user;
-        // console.log(user);
-        this.moodplayService.getMoods()
-          .then(moods => {
-            this.moods = moods;
-            this.initialisePlay();
-          })
-      })
-  }
-
-  getArtists(): void {
-    this.moodplayService.getArtistCoordinates()
-      .then(coords => {
-        this.artists = coords;
-        this.initialiseArtists();
-      });
-  }
-
-  getTracks(): void {
-    this.moodplayService.getTrackCoordinates()
-      .then(coords => {
-        this.tracks = coords;
-        this.initialiseTracks();
+  makeInterface(): void {
+    this.moodplayService.getMoods()
+      .then(moods => {
+        this.moods = moods;
+        this.initialisePlay();
       })
   }
 
@@ -190,7 +135,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
           d.distance = Math.hypot(coords.valence, coords.arousal);
           return d.distance
         })
-        .call(this.redrawPolygon);
+        .attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; })
+        // .call(this.redrawPolygon);
 
     this.points = this.moods.map( m => { var point = [
         (m.valence + 1.0) * (this.width / 2),
@@ -215,7 +161,9 @@ export class GraphicsComponent implements OnInit, OnChanges {
         .attr("opacity", 0)
         .attr("cursor", "pointer")
         .on("click", d => this.showLocation(d))
-        .call(this.redrawPolygon);
+        .attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; });
+
+        // .call(this.redrawPolygon);
 
     // var link = this.svg.append("g")
     //   .selectAll("line")
@@ -299,7 +247,7 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("stroke-opacity", d => d.opacity)
       .style("fill-opacity", 0)
       .style("stroke", d => { return d3.rgb(this.color(d.color)).brighter(BRIGHT) })
-      .attr("r", d => d.radius)
+      .attr("r", d => (d.radius * 10))
       .call(this.redrawCursor);
 
     // this.playerCursor = this.svg.insert("circle", "rect")
@@ -424,8 +372,8 @@ export class GraphicsComponent implements OnInit, OnChanges {
     }
   }
 
-  displayPlayerCursor(coords: Coords) {
-    var point = this.fromMoodToPoint(coords.valence, coords.arousal);
+  displayPlayerCursor() {
+    var point = this.fromMoodToPoint(this.coords.valence, this.coords.arousal);
     var current = { left: this.playerCursor.attr("cx"), top: this.playerCursor.attr("cy") }
     var distance = Math.sqrt(
         Math.pow(current.left - point.left, 2) + Math.pow(current.top - point.top, 2)
@@ -434,10 +382,10 @@ export class GraphicsComponent implements OnInit, OnChanges {
     var duration = distance / velocity * 10;
     this.playerCursor.selectAll("*").interrupt();
     this.playerCursor.transition().duration(duration).ease(d3.easeLinear)
-      .style("stroke", d => {
-        d.color = this.wrapColor(d.color - (Math.PI * 0.43576) );
-        return d3.rgb(this.color(d.color)).darker(DARK)
-      })
+      // .style("stroke", d => {
+      //   d.color = this.wrapColor(d.color - (Math.PI * 0.43576) );
+      //   return d3.rgb(this.color(d.color)).darker(DARK)
+      // })
       .attr("cx", point.left)
       .attr("cy", point.top);
   }
@@ -458,89 +406,6 @@ export class GraphicsComponent implements OnInit, OnChanges {
     mood.valence = x / (this.width / 2.0) - 1.0;
     mood.arousal = (y / (this.height / 2.0) - 1.0) * -1.0;
     return mood;
-  }
-
-  initialiseArtists(): void {
-    this.svg = d3.select(this.element.nativeElement);
-
-    this.width = +this.svg.attr("width");
-    this.height = +this.svg.attr("height");
-
-    this.color = d3.scaleSequential(d3.interpolateRainbow).domain([1 * Math.PI, -1 * Math.PI]);
-
-    this.svg.append("g").selectAll("circle").data(this.artists)
-      .enter()
-      .append("circle")
-        .attr("fill", d => { return this.color(d.angle = Math.atan2(d.arousal, d.valence)) })
-        .attr("cx", d => { return Math.cos(d.angle) * (this.width / Math.SQRT2 + 30) + 480 })
-        .attr("cy", d => { return Math.sin(d.angle) * (this.height / Math.SQRT2 + 30) + 480 })
-        .attr("r", d => { return 4 })
-        .attr("opacity", 0.8)
-        .attr("cursor", "pointer")
-        .on("mouseover", d => this.showArtistInfo(d) )
-        .on("mouseout", d => this.hideArtistInfo(d) )
-        .on("click", d => this.playerService.transitionToArtist(d))
-      .transition()
-        .ease(d3.easeCubicOut)
-        .delay( d => { return Math.random() * 3000 }).duration(2000)
-        .attr("cx", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
-        .attr("cy", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 }); // WHY??
-
-    this.label = this.svg.selectAll(".label")
-    	.data(this.artists)
-    	.enter().append("text")
-      .text( d => { return d.name } )
-      .attr("x", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
-      .attr("y", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
-      .style("text-anchor", "middle")
-      .style("fill", "#444")
-      .style("font-family", "Nunito")
-      .style("font-size", "0pt")
-      .style("pointer-events", "none")
-      .attr("opacity", 0.0)
-      .attr("cursor", "pointer")
-  }
-
-  initialiseTracks(): void {
-    this.svg = d3.select(this.element.nativeElement);
-
-    this.width = +this.svg.attr("width");
-    this.height = +this.svg.attr("height");
-
-    this.color = d3.scaleSequential(d3.interpolateRainbow).domain([1 * Math.PI, -1 * Math.PI]);
-
-    this.svg.append("g").selectAll("circle").data(this.tracks)
-    .enter()
-    .append("circle")
-      .style("z-index", "-1")
-      .attr("fill", d => { return this.color(d.angle = Math.atan2(d.arousal, d.valence)) })
-      .attr("cx", d => { return Math.cos(d.angle) * (this.width / Math.SQRT2 + 30) + 480 })
-      .attr("cy", d => { return Math.sin(d.angle) * (this.height / Math.SQRT2 + 30) + 480 })
-      .attr("r", d => { return 3 })
-      .attr("opacity", 0.8)
-      .attr("cursor", "pointer")
-      .on("mouseover", d => this.showTrackInfo(d) )
-      .on("mouseout", d => this.hideTrackInfo(d) )
-      .on("click", d => this.playerService.transitionToTrack(d))
-    .transition()
-      .ease(d3.easeCubicOut)
-      .delay( d => { return Math.random() * 3000 }).duration(2000)
-      .attr("cx", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
-      .attr("cy", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
-
-      this.label = this.svg.selectAll(".label")
-      	.data(this.tracks)
-      	.enter().append("text")
-        .text( d => { return d.title + ' (' + d.artist + ')' } )
-        .attr("x", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
-        .attr("y", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
-        .style("text-anchor", "middle")
-        .style("fill", "#444")
-        .style("font-family", "Nunito")
-        .style("font-size", "0pt")
-        .style("pointer-events", "none")
-        .attr("opacity", 0.0)
-        .attr("cursor", "pointer")
   }
 
   initialiseMoods(): void {

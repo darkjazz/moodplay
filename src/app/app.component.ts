@@ -3,8 +3,9 @@ import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { MenuOverlayRef }   from './shared/overlayref';
 import { ComponentPortal }  from '@angular/cdk/portal';
 import { EntryComponent }    from './components/entry.component';
-import { User } from './shared/models';
+import { User, PartyMessage, Party, Track, Coords } from './shared/models';
 import { PlayerService } from './services/player.service';
+import { MoodplayService } from './services/moodplay.service';
 
 interface MenuOverlayConfig {
     panelClass?: string;
@@ -26,16 +27,35 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
 export class AppComponent {
   selectionVariable = 'play';
   user: User;
+  party: Party;
+  track: Track;
+  coords: Coords;
+
+  ioPartyMessage;
 
   constructor(
     private overlay: Overlay,
-    private playerService: PlayerService
+    private playerService: PlayerService,
+    private moodplayService: MoodplayService
   ) { }
 
   ngOnInit(): void {
-    // if (!this.user) {
-    //   this.showOverlay()
-    // }
+    this.initIoConnection();
+    this.moodplayService.addUser()
+      .then(user => {
+        this.user = user;
+      })
+  }
+
+  initIoConnection() {
+    this.moodplayService.initSocket();
+
+    this.ioPartyMessage = this.moodplayService.onPartyMessage()
+      .subscribe((msg: PartyMessage) => {
+        this.party = msg.party;
+        this.track = msg.track;
+        this.coords = msg.coords;
+      });
   }
 
   onSelected(text: string) {

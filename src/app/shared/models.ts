@@ -79,6 +79,12 @@ export class Party{
   users: User[];
 }
 
+export class PartyMessage{
+  coords: Coords;
+  party: Party;
+  track: Track;
+}
+
 export interface Features {
   beats: Beat[],
   key: string,

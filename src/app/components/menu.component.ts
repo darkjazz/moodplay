@@ -5,11 +5,18 @@ import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal }  from '@angular/cdk/portal';
 import { MenuItem }         from '../shared/menuitem';
 import { MenuOverlayRef }   from '../shared/overlayref';
+import { EntryComponent }    from '../components/entry.component';
 
 interface MenuOverlayConfig {
     panelClass?: string;
     hasBackdrop?: boolean;
     backdropClass?: string;
+}
+
+const DEFAULT_CONFIG: MenuOverlayConfig = {
+  hasBackdrop: true,
+  backdropClass: 'dark-backdrop',
+  panelClass: 'overlay-panel'
 }
 
 const ITEMS = [
@@ -20,12 +27,6 @@ const ITEMS = [
   { "text": "github", "icon": "cloud_download" }
 ];
 
-const DEFAULT_CONFIG: MenuOverlayConfig = {
-  hasBackdrop: true,
-  backdropClass: 'dark-backdrop',
-  panelClass: 'overlay-panel'
-}
-
 @Component({
   selector: 'ml-menu',
   templateUrl: 'menu.component.html',
@@ -33,7 +34,7 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
 })
 @Injectable()
 export class Menu {
-  @ViewChild('sidenav') menu: MatMenu;
+  @ViewChild('matMenu') menu: MatMenu;
   // @ViewChild('navbtn') navbtn: MatButton;
   @Output() selectionEvent = new EventEmitter<string>();
   items: MenuItem[];
@@ -42,6 +43,15 @@ export class Menu {
     ITEMS.forEach(item => {
       this.items.push(item as MenuItem)
     })
+  }
+
+  showOverlay() {
+    var viewPortal = new ComponentPortal(EntryComponent);
+    const overlayRef = this.createOverlay();
+    const dialogRef = new MenuOverlayRef(overlayRef);
+    overlayRef.attach(viewPortal);
+    overlayRef.backdropClick().subscribe(_ => dialogRef.close());
+    return dialogRef;
   }
 
   select(text: string) {

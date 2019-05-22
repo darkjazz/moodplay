@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 
 @Component({
@@ -7,5 +7,15 @@ import { MatButton } from '@angular/material/button';
   styleUrls: ['entry.component.scss']
 })
 export class EntryComponent {
+
+  private element;
+
+  constructor(private el: ElementRef) {
+      this.element = el.nativeElement;
+  }
+
+  close() {
+    this.element.remove();
+  }
 
 }

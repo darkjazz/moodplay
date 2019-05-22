@@ -7,7 +7,7 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
 import { Artist, Coords, Track, TrackCoords, ArtistCoords,
-  Limits, Mood, User, Party, UserCoords, Features } from '../shared/models';
+  Limits, Mood, User, Party, UserCoords, Features, PartyMessage } from '../shared/models';
 import { generateName, getUserGuid } from '../shared/util';
 import { Config } from '../shared/config';
 
@@ -30,18 +30,18 @@ export class MoodplayService {
     });
   }
 
-  public onPartyMessage(): Observable<Party> {
-    return new Observable<Party>(observer => {
-        this.socket.on('party_message', (data: Party) => observer.next(data));
+  public onPartyMessage(): Observable<PartyMessage> {
+    return new Observable<PartyMessage>(observer => {
+        this.socket.on('party_message', (data: PartyMessage) => observer.next(data));
     });
   }
 
-  public onTrackCoordinates(): Observable<TrackCoords> {
-    return new Observable<TrackCoords>(observer => {
-        this.socket.on('track_coordinates', (data: TrackCoords) => observer.next(data));
-    });
-  }
-
+  // public onTrackCoordinates(): Observable<TrackCoords> {
+  //   return new Observable<TrackCoords>(observer => {
+  //       this.socket.on('track_coordinates', (data: TrackCoords) => observer.next(data));
+  //   });
+  // }
+  //
   public onCursorMessage(): Observable<Coords> {
     return new Observable<Coords>(observer => {
       this.socket.on('cursor_coordinates', (data: Coords) => observer.next(data));
