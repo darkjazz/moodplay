@@ -83,14 +83,6 @@ export class GraphicsComponent implements OnInit, OnChanges {
       })
   }
 
-  getMoods(): void {
-    this.moodplayService.getMoods()
-      .then(moods => {
-        this.moods = moods;
-        this.initialiseMoods();
-      })
-  }
-
   initialisePlay(): void {
     this.svg = d3.select(this.element.nativeElement);
 
@@ -163,25 +155,6 @@ export class GraphicsComponent implements OnInit, OnChanges {
         .on("click", d => this.showLocation(d))
         .attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; });
 
-        // .call(this.redrawPolygon);
-
-    // var link = this.svg.append("g")
-    //   .selectAll("line")
-    //   .data(voronoi.links(this.points))
-    //   .enter().append("line")
-    //   .attr("stroke", "#ddd")
-    //   .attr("stroke-opacity", 0.8)
-    //   .call(this.redrawLink);
-    //
-    // var site = this.svg.append("g")
-    //   .selectAll("circle")
-    //   .data(this.points)
-    //   .enter().append("circle")
-    //   .attr("r", 5.5)
-    //   .attr("stroke", "#ddd")
-    //   .attr("stroke-opacity", 0.8)
-    //   .call(this.redrawSite);
-
     this.label = d3.select("body").append("div")
       .style("position", "absolute")
     	.style("z-index", "10")
@@ -249,15 +222,6 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .style("stroke", d => { return d3.rgb(this.color(d.color)).brighter(BRIGHT) })
       .attr("r", d => (d.radius * 10))
       .call(this.redrawCursor);
-
-    // this.playerCursor = this.svg.insert("circle", "rect")
-    //   .attr("cx", this.width / 2)
-    //   .attr("cy", this.height / 2)
-    //   .attr("r", 20.0)
-    //   .style("stroke", "#000")
-    //   .style("stroke-width", 3.0)
-    //   .style("stroke-opacity", 0.7)
-    //   .style("fill-opacity", 0)
 
   }
 
@@ -408,112 +372,4 @@ export class GraphicsComponent implements OnInit, OnChanges {
     return mood;
   }
 
-  initialiseMoods(): void {
-    this.svg = d3.select(this.element.nativeElement);
-
-    this.width = +this.svg.attr("width");
-    this.height = +this.svg.attr("height");
-
-    this.color = d3.scaleSequential(d3.interpolateRainbow).domain([1 * Math.PI, -1 * Math.PI]);
-
-    this.svg.append("g").selectAll("circle").data(this.moods)
-    .enter()
-    .append("circle")
-      .attr("fill", d => { return this.color(d.angle = Math.atan2(d.arousal, d.valence)) })
-      .attr("cx", d => { return Math.cos(d.angle) * (this.width / Math.SQRT2 + 30) + 480 })
-      .attr("cy", d => { return Math.sin(d.angle) * (this.height / Math.SQRT2 + 30) + 480 })
-      .attr("r", d => { return 40 })
-      .attr("opacity", 0.4)
-      .attr("cursor", "pointer")
-      .on("mouseover", d => this.showMoodInfo(d) )
-      .on("mouseout", d => this.hideMoodInfo(d) )
-      .on("click", d => this.playerService.transitionToMood(d))
-    .transition()
-      .ease(d3.easeCubicOut)
-      .delay( d => { return Math.random() * 3000 }).duration(2000)
-      .attr("cx", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
-      .attr("cy", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
-
-      this.label = this.svg.selectAll(".label")
-      	.data(this.moods)
-      	.enter().append("text")
-        .text( d => { return d.label } )
-        .attr("fill", d => { return this.color(d.angle = Math.atan2(d.arousal, d.valence)) })
-        .attr("x", d => { return (d.valence + 1.0) * (this.width * 0.8 / 2) + 30 })
-        .attr("y", d => { return (d.arousal * -1.0 + 1.0) * (this.height * 0.8 / 2) + 30 })
-        .style("text-anchor", "middle")
-        .style("font-family", "Nunito")
-        .style("font-size", "10pt")
-        .style("pointer-events", "none")
-        .attr("opacity", 0.0)
-        .attr("cursor", "pointer")
-        .transition()
-          .ease(d3.easeCubicOut)
-          .delay(3000).duration(1000)
-          .attr("opacity", 0.7)
-  }
-
-  showArtistInfo(selected) {
-    this.svg.selectAll("text").filter(node => {
-      return (node["name"] == selected.name)
-    }).transition().duration(200)
-      .style("font-size", "7pt")
-      .style("fill", "#ddd")
-      .style("-webkit-text-stroke-width", "0px")
-      .style("-webkit-text-stroke-color", "#000")
-      .attr("opacity", 0.9);
-  }
-
-  hideArtistInfo(selected) {
-    this.svg.selectAll("text").filter(node => {
-      return (node["name"] == selected.name)
-    }).transition().duration(200)
-      .style("font-size", "0pt")
-      .style("fill", "#444")
-      .style("-webkit-text-stroke-width", "0px")
-      .style("-webkit-text-stroke-color", "#000")
-      .attr("opacity", 0.0);
-  }
-
-  showTrackInfo(selected) {
-    this.svg.selectAll("text").filter(node => {
-      return (node["title"] == selected.title && node["artist"] == selected["artist"])
-    }).transition().duration(200)
-      .style("font-size", "7pt")
-      .style("fill", "#ddd")
-      .style("-webkit-text-stroke-width", "0px")
-      .style("-webkit-text-stroke-color", "#000")
-      .attr("opacity", 0.9);
-  }
-
-  hideTrackInfo(selected) {
-    this.svg.selectAll("text").filter(node => {
-      return (node["title"] == selected.title)
-    }).transition().duration(200)
-      .style("font-size", "0pt")
-      .style("fill", "#444")
-      .style("-webkit-text-stroke-width", "0px")
-      .style("-webkit-text-stroke-color", "#000")
-      .attr("opacity", 0.0);
-  }
-
-  showMoodInfo(selected) {
-    this.svg.selectAll("text").filter(node => {
-      return (node["label"] == selected.label)
-    }).transition().duration(200)
-      .style("font-size", "16pt")
-      .style("-webkit-text-stroke-width", "0px")
-      .style("-webkit-text-stroke-color", "#000")
-      .attr("opacity", 0.9);
-  }
-
-  hideMoodInfo(selected) {
-    this.svg.selectAll("text").filter(node => {
-      return (node["label"] == selected.label)
-    }).transition().duration(200)
-      .style("font-size", "10pt")
-      .style("-webkit-text-stroke-width", "0px")
-      .style("-webkit-text-stroke-color", "#000")
-      .attr("opacity", 0.7);
-  }
 }
