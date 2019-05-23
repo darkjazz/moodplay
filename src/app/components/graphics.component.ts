@@ -8,7 +8,7 @@ import * as d3 from "d3";
 const TIME_LIMIT = 11000;
 const COORDS_HISTORY_SIZE = 23;
 const TDUR = 10000;
-const N_CIRCLES = 3;
+const N_CIRCLES = 5;
 const BRIGHT = 0.7;
 const DARK = 1.0 ;
 const FRAG_SIZE = 1201;
@@ -218,9 +218,9 @@ export class GraphicsComponent implements OnInit, OnChanges {
       .append("circle")
       .style("stroke-width", 5.0)
       .style("stroke-opacity", d => d.opacity)
-      .style("fill-opacity", 0)
+      .style("fill-opacity", d => (1.0 - d.opacity))
       .style("stroke", d => { return d3.rgb(this.color(d.color)).brighter(BRIGHT) })
-      .attr("r", d => (d.radius * 10))
+      .attr("r", d => (d.radius * 4))
       .call(this.redrawCursor);
 
   }
@@ -303,9 +303,11 @@ export class GraphicsComponent implements OnInit, OnChanges {
   displayPartyUsers() {
     if (this.party) {
       var users = (<any>Object).values(this.party.users).filter(user => {
-        return user.id != this.user.id && Date.now() - user.current_coords.date < TIME_LIMIT
+        return user.id != this.user.id && Date.now() - user.current_coords.date < this.party.vote_length
       });
       if (this.others) { this.others.remove() }
+      if (Date.now() - this.party.users[this.user.id].current_coords.date > this.party.vote_length)
+        this.selectedLabel.style("visibility", "hidden");
       this.others = this.svg.selectAll(".label")
 			   .data(users)
 			   .enter().append("text")

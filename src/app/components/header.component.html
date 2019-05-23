@@ -1,6 +1,6 @@
 <div id="header" fxLayout="row">
   <h1 fxFlex="1 1 auto">{{ title }}</h1>
-  <span class="info" fxFlex="5 1 auto"><div *ngIf="track">{{ track.artist }} : {{ track.title }}</div></span>
+  <span class="info" fxFlex="4 1 auto"><div *ngIf="currentTrack">{{ currentTrack.artist }} : {{ currentTrack.title }}</div></span>
   <button fxFlex="1 1 auto" (click)="play()">
     <mat-icon>{{playerIcon}}</mat-icon>
   </button>

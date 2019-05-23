@@ -4,6 +4,11 @@ mat-icon {
   font-size: 100%;
 }
 
+span {
+  font-family: "Kunita";
+  font-size: 17pt;
+}
+
 button {
   background-color: transparent !important;
   color: #666;
@@ -23,4 +28,5 @@ button {
   opacity: 0.85;
   border: 1pt solid #aaa;
   border-radius: 4pt;
+  overflow-y: scroll;
 }

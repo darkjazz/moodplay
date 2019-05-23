@@ -5,6 +5,15 @@
 
 span{
   text-transform: uppercase;
+  width: 600px;
+  height: 50px;
+  overflow-x: hidden;
+  border: 1pt #444 solid;
+  border-radius: 4pt;
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: #333;
+  white-space: nowrap;
 }
 
 .info {
@@ -15,6 +24,7 @@ span{
 }
 
 button{
+  margin-right: 20px;
   cursor: pointer;
   color: #666;
   -webkit-transition: color .4s ease;

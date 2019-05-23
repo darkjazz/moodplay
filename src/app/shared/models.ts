@@ -67,7 +67,6 @@ export class User{
   name: string;
   updated: string;
   current_coords: UserCoords;
-  vote_length: Number;
   history: UserCoords[];
 }
 
@@ -77,6 +76,7 @@ export class Party{
   updated: string;
   owner_id: string;
   update_rate: number;
+  vote_length: number;
   users: User[];
 }
 

@@ -19,6 +19,12 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
   panelClass: 'overlay-panel'
 }
 
+const ITEMS = [
+  { "text": "change name", "icon": "edit" },
+  { "text": "help", "icon": "help" },
+  { "text": "about", "icon": "info" }
+];
+
 @Component({
   selector: 'ml-menu',
   templateUrl: 'menu.component.html',
@@ -29,7 +35,12 @@ export class Menu {
   @ViewChild('matMenu') menu: MatMenu;
   @Output() selectionEvent = new EventEmitter<string>();
   items: MenuItem[];
-  constructor(private overlay: Overlay) {}
+  constructor(private overlay: Overlay) {
+    this.items = new Array<MenuItem>();
+    ITEMS.forEach(item => {
+      this.items.push(item as MenuItem)
+    })
+  }
 
   showOverlay() {
     var viewPortal = new ComponentPortal(EntryComponent);
@@ -43,17 +54,8 @@ export class Menu {
   select(text: string) {
     var viewPortal;
     switch(text) {
-      case "play":
-        this.enterPlay();
-        break;
-      case "artists":
-        this.showArtists();
-        break;
-      case "tracks":
-        this.showTracks();
-        break;
-      case "moods":
-        this.showMoods();
+      case "edit":
+        this.showOverlay();
         break;
       case "github":
         this.gotoGithub();
