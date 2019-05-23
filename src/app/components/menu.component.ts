@@ -19,14 +19,6 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
   panelClass: 'overlay-panel'
 }
 
-const ITEMS = [
-  { "text": "play", "icon": "touch_app" },
-  { "text": "artists", "icon": "record_voice_over" },
-  { "text": "tracks", "icon": "music_video" },
-  { "text": "moods", "icon": "mood" },
-  { "text": "github", "icon": "cloud_download" }
-];
-
 @Component({
   selector: 'ml-menu',
   templateUrl: 'menu.component.html',
@@ -35,15 +27,9 @@ const ITEMS = [
 @Injectable()
 export class Menu {
   @ViewChild('matMenu') menu: MatMenu;
-  // @ViewChild('navbtn') navbtn: MatButton;
   @Output() selectionEvent = new EventEmitter<string>();
   items: MenuItem[];
-  constructor(private overlay: Overlay) {
-    this.items = new Array<MenuItem>();
-    ITEMS.forEach(item => {
-      this.items.push(item as MenuItem)
-    })
-  }
+  constructor(private overlay: Overlay) {}
 
   showOverlay() {
     var viewPortal = new ComponentPortal(EntryComponent);

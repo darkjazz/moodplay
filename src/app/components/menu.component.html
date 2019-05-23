@@ -1,9 +1,11 @@
-<button mat-icon-button [matMenuTriggerFor]="menu">
-  <mat-icon>menu</mat-icon>
-</button>
-<mat-menu #menu="matMenu">
-  <button mat-menu-item (click)="showOverlay()">Change name</button>
-  <button mat-menu-item>Create party</button>
-  <button mat-menu-item>Help</button>
-  <button mat-menu-item>About</button>
-</mat-menu>
+<div>
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="showOverlay()">Change name</button>
+    <button mat-menu-item>Create party</button>
+    <button mat-menu-item>Help</button>
+    <button mat-menu-item>About</button>
+  </mat-menu>
+</div>
