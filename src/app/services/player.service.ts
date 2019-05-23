@@ -17,15 +17,15 @@ export class PlayerService  {
     private featureService: FeatureService) {}
   
   togglePlay() {
-    if (!this.isPlaying) {
+    this.isPlaying = !this.isPlaying;
+    if (this.isPlaying) {
       this.init();
       if (this.lastAudioUri) {
         this.transition(this.lastAudioUri);
       }
     } else {
-      //this.dj.stop(); //IN NEW VERSION!
+      this.dj.stop();
     }
-    this.isPlaying = !this.isPlaying;
   }
   
   async transitionToTrack(track: TrackCoords) {
@@ -52,7 +52,7 @@ export class PlayerService  {
   private transition(audioUri: string) {
     console.log(audioUri)
     this.lastAudioUri = audioUri;
-    if (this.dj) {
+    if (this.dj && this.isPlaying) {
       this.dj.transitionToTrack(audioUri);
     }
   }
