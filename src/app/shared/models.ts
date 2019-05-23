@@ -83,7 +83,7 @@ export class Party{
 export class PartyMessage{
   coords: Coords;
   party: Party;
-  track: Track;
+  track: TrackCoords;
 }
 
 export interface Features {

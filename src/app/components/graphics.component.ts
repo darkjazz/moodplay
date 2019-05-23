@@ -2,7 +2,7 @@ import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRe
 import { filter } from 'rxjs/operators';
 import { MoodplayService } from '../services/moodplay.service';
 import { PlayerService } from '../services/player.service';
-import { ArtistCoords, TrackCoords, Coords, Mood, User, Party } from '../shared/models';
+import { Coords, Mood, User, Party } from '../shared/models';
 import * as d3 from "d3";
 
 const TIME_LIMIT = 11000;
