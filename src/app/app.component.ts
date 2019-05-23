@@ -3,7 +3,7 @@ import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { MenuOverlayRef }   from './shared/overlayref';
 import { ComponentPortal }  from '@angular/cdk/portal';
 import { EntryComponent }    from './components/entry.component';
-import { User, PartyMessage, Party, Track, Coords } from './shared/models';
+import { User, PartyMessage, Party, TrackCoords, Coords } from './shared/models';
 import { PlayerService } from './services/player.service';
 import { MoodplayService } from './services/moodplay.service';
 
@@ -28,7 +28,7 @@ export class AppComponent {
   selectionVariable = 'play';
   user: User;
   party: Party;
-  track: Track;
+  track: TrackCoords;
   coords: Coords;
 
   ioPartyMessage;
@@ -55,6 +55,9 @@ export class AppComponent {
         this.party = msg.party;
         this.track = msg.track;
         this.coords = msg.coords;
+        if (this.track) {
+          this.playerService.transitionToTrack(this.track);
+        }
       });
   }
 

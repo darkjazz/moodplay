@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response, RequestOptions } from '@angular/http';
+import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
-import { Observer } from 'rxjs/Observer';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
-import { Artist, Coords, Track, TrackCoords, ArtistCoords,
-  Limits, Mood, User, Party, UserCoords, Features, PartyMessage } from '../shared/models';
+import { Coords, Track, TrackCoords, ArtistCoords,
+  Mood, User, Party, Features, PartyMessage } from '../shared/models';
 import { generateName, getUserGuid } from '../shared/util';
 import { Config } from '../shared/config';
 
@@ -48,7 +47,7 @@ export class MoodplayService {
     })
   }
 
-  public getNearestTrack(valence: Number, arousal: Number): Promise<Track> {
+  public getNearestTrack(valence: Number, arousal: Number): Promise<TrackCoords> {
     var params = `/${ valence }/${ arousal }`;
     return this.http.get(Config.server + Config.moodplay + '/get_nearest_track' + params)
       .toPromise()
