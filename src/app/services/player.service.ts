@@ -44,8 +44,8 @@ export class PlayerService  {
   
   private init() {
     if (!this.dj) {
-      this.dj = new AutoDj(this.featureService, DecisionType.Default,
-        undefined, TransitionType.Beatmatch);
+      this.dj = new AutoDj(this.featureService, DecisionType.DecisionTree);//,
+        //undefined, TransitionType.Beatmatch);
     }
   }
   
