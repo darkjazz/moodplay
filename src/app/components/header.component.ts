@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Inject, HostBinding } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 import { PlayerService } from '../services/player.service';
 import { Track } from '../shared/models';
 
@@ -10,7 +12,14 @@ import { Track } from '../shared/models';
 export class HeaderComponent {
   title = 'moodplay';
   playerIcon = "play_circle_outline";
-  @Input() track: Track;
+  currentTrack: Track;
+  previousTrack: Track;
+
+  @Input()
+  set track(track: Track) {
+    this.previousTrack = this.currentTrack;
+    this.currentTrack = track;
+  }
 
   constructor(
     private playerService: PlayerService

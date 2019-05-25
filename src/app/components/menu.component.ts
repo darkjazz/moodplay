@@ -20,11 +20,9 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
 }
 
 const ITEMS = [
-  { "text": "play", "icon": "touch_app" },
-  { "text": "artists", "icon": "record_voice_over" },
-  { "text": "tracks", "icon": "music_video" },
-  { "text": "moods", "icon": "mood" },
-  { "text": "github", "icon": "cloud_download" }
+  { "text": "change name", "icon": "edit" },
+  { "text": "help", "icon": "help" },
+  { "text": "about", "icon": "info" }
 ];
 
 @Component({
@@ -35,7 +33,6 @@ const ITEMS = [
 @Injectable()
 export class Menu {
   @ViewChild('matMenu') menu: MatMenu;
-  // @ViewChild('navbtn') navbtn: MatButton;
   @Output() selectionEvent = new EventEmitter<string>();
   items: MenuItem[];
   constructor(private overlay: Overlay) {
@@ -57,17 +54,8 @@ export class Menu {
   select(text: string) {
     var viewPortal;
     switch(text) {
-      case "play":
-        this.enterPlay();
-        break;
-      case "artists":
-        this.showArtists();
-        break;
-      case "tracks":
-        this.showTracks();
-        break;
-      case "moods":
-        this.showMoods();
+      case "edit":
+        this.showOverlay();
         break;
       case "github":
         this.gotoGithub();

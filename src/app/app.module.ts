@@ -1,9 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatMenuModule, MatIconModule, MatButtonModule } from '@angular/material';
+import { MatDialogModule, MatMenuModule, MatIconModule, MatButtonModule, MatInputModule } from '@angular/material';
 import { BrowserAnimationsModule }  from '@angular/platform-browser/animations';
 import { OverlayModule }            from '@angular/cdk/overlay';
 import { PortalModule }             from '@angular/cdk/portal';
@@ -29,12 +30,15 @@ import { EntryComponent } from './components/entry.component';
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
     JsonpModule,
     FlexLayoutModule,
+    MatDialogModule,
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
+    MatInputModule,
     BrowserAnimationsModule,
     OverlayModule,
     PortalModule

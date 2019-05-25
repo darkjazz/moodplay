@@ -15,7 +15,7 @@ export class PlayerService  {
   constructor(private deezer: DeezerService,
     private moodplayService: MoodplayService,
     private featureService: FeatureService) {}
-  
+
   togglePlay() {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
@@ -24,10 +24,10 @@ export class PlayerService  {
         this.transition(this.lastAudioUri);
       }
     } else {
-      this.dj.stop();
+      // this.dj.stop();
     }
   }
-  
+
   async transitionToTrack(track: TrackCoords) {
     this.transition(track.uri);
   }
@@ -41,14 +41,14 @@ export class PlayerService  {
     const track = await this.moodplayService.getNearestTrack(mood.valence, mood.arousal);
     this.transition(track.uri);
   }
-  
+
   private init() {
     if (!this.dj) {
       this.dj = new AutoDj(this.featureService, DecisionType.DecisionTree);//,
         //undefined, TransitionType.Beatmatch);
     }
   }
-  
+
   private transition(audioUri: string) {
     console.log(audioUri)
     this.lastAudioUri = audioUri;
