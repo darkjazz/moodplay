@@ -24,7 +24,7 @@ export class PlayerService  {
         this.transition(this.lastAudioUri);
       }
     } else {
-      // this.dj.stop();
+      this.dj.stop();
     }
   }
 

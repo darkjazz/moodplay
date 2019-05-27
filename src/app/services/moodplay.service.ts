@@ -15,6 +15,7 @@ import * as socketIo from 'socket.io-client';
 @Injectable()
 export class MoodplayService {
   private socket;
+  private user: User;
 
   constructor(private http: Http) { }
 
@@ -103,10 +104,27 @@ export class MoodplayService {
     return this.http.get(Config.server + Config.user + '/add_user' + params)
       .toPromise()
       .then((res:Response) => {
-        return res.json() as User;
+        this.user = res.json() as User;
+        return this.user;
       })
       .catch(this.handleError)
   }
+
+  public changeUserName(name: string, partyID?: string): Promise<User> {
+    this.user.name = name;
+    partyID = partyID ? partyID : Config.globalPartyID;
+    var params = `/${ partyID }/${ this.user.id }/${ name }`;
+    return this.http.get(Config.server + Config.user + '/change_name' + params)
+      .toPromise()
+      .then((res:Response) => {
+        this.user = res.json() as User;
+        return this.user;
+      })
+      .catch(this.handleError)
+
+  }
+
+  public getUser(): User { return this.user; }
 
   public addUserCoordinates(userID: string, valence: number, arousal: number, partyID?: string): Promise<Party>{
     var partyID = partyID ? partyID : Config.globalPartyID;
