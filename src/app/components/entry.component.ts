@@ -11,7 +11,7 @@ import { User } from '../shared/models';
 export class EntryComponent {
 
   private element;
-  private username: string;
+  username: string;
 
   constructor(private el: ElementRef, private moodplayService: MoodplayService) {
       this.element = el.nativeElement;
@@ -19,7 +19,6 @@ export class EntryComponent {
   }
 
   close() {
-    console.log(this.username);
     if (this.username && this.username != this.moodplayService.getUser().name) {
       this.moodplayService.changeUserName(this.username);
     }
