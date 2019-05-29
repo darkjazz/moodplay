@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
+import { take } from 'rxjs/operators';
 import { DeezerService } from '../services/deezer.service';
 import { MoodplayService } from '../services/moodplay.service';
 import { FeatureService } from '../services/feature.service';
 import { ArtistCoords, Mood, TrackCoords } from '../shared/models';
-import { AutoDj, DecisionType, TransitionType } from 'auto-dj';
+import { AutoDj, DecisionType } from 'auto-dj';
 
 @Injectable()
 export class PlayerService  {
@@ -28,32 +29,33 @@ export class PlayerService  {
     }
   }
 
-  async transitionToTrack(track: TrackCoords) {
-    this.transition(track.uri);
+  transitionToTrack(track: TrackCoords) {
+    return this.transition(track.uri);
   }
 
   async transitionToArtist(artist: ArtistCoords) {
     const clip = await this.deezer.get30SecClipFromSearch(artist.name);
-    this.transition(clip);
+    return this.transition(clip);
   }
 
   async transitionToMood(mood: Mood) {
     const track = await this.moodplayService.getNearestTrack(mood.valence, mood.arousal);
-    this.transition(track.uri);
+    return this.transition(track.uri);
   }
 
   private init() {
     if (!this.dj) {
-      this.dj = new AutoDj(this.featureService, DecisionType.DecisionTree);//,
-        //undefined, TransitionType.Beatmatch);
+      this.dj = new AutoDj(this.featureService, DecisionType.DecisionTree);
     }
   }
 
-  private transition(audioUri: string) {
+  private async transition(audioUri: string) {
     console.log(audioUri)
     this.lastAudioUri = audioUri;
     if (this.dj && this.isPlaying) {
-      this.dj.transitionToTrack(audioUri);
+      await this.dj.transitionToTrack(audioUri);
+      //gets sent as soon as the dj starts transitioning
+      return this.dj.getTransitionObservable().pipe(take(1)).toPromise();
     }
   }
 

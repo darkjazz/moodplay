@@ -51,12 +51,12 @@ export class AppComponent {
     this.moodplayService.initSocket();
 
     this.ioPartyMessage = this.moodplayService.onPartyMessage()
-      .subscribe((msg: PartyMessage) => {
+      .subscribe(async (msg: PartyMessage) => {
         this.party = msg.party;
-        this.track = msg.track;
         this.coords = msg.coords;
-        if (this.track) {
-          this.playerService.transitionToTrack(this.track);
+        if (msg.track) {
+          await this.playerService.transitionToTrack(msg.track);
+          this.track = msg.track;
         }
       });
   }
