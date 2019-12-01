@@ -1,6 +1,12 @@
+.entry {
+  background-color: #222;
+  opacity: 0.9;
+}
+
 span{
   color: #FFAF07;
   font-family: "Kanit";
+  font-size: 17pt;
 }
 
 button {
@@ -19,10 +25,16 @@ button {
 mat-icon{
   margin-top: 5px;
   margin-left: 5px;
+  font-size: 100%;
 }
 
 input {
   height: 17px;
-  background: #ddd;
+  background-color: #333;
   border-radius: 4pt;
+  font-family: "Kanit";
+  font-size: 17pt;
+  color: #81ef0b;
+  height: 40px;
+  padding-left: 10px;
 }

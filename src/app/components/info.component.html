@@ -1,0 +1,26 @@
+<div>
+  <p>
+    moodplay.github.io is an online music streaming platform that allows users to collaboratively
+    choose music by mood using web browsers which means it is accessible on any device.
+    Users can participate in the global Moodplay party where everyone is added upon arrival,
+    but they can also create personal parties that allows them to explore the mood space privately.
+  </p>
+  <p>
+    The interface is based on 2-dimensional scattering of tracks in a mood space derived from
+    user tags in <a href="https://www.last.fm/">Last.fm</a>. Each track has been assigned
+    coordinates that range between negative and positive on the horizontal axis and
+    calm to excited on the vertical from bottom to top. 
+  </p>
+  <p>
+    The music is automatically mixed by an automatic DJ module that models various DJ’ing styles
+    using content-based audio features that represent musical parameters such as tempo, beats,
+    bars, keys, instrumentation and volume to find the best match for next tracks in the
+    continuous mix by tempo, tonality and timbre.
+  </p>
+  <p>
+    The system consists of an <a href="https://angular.io">Angular</a> front-end and
+    a <a href="https://moodplay-data.herokuapp.com/">server application</a>, implemented in
+    <a href="http://expressjs.com">Express.js</a>, that stores track metadata, mood coordinates
+    and audio features for the <a href="https://www.npmjs.com/package/auto-dj">auto-dj3</a> module.
+  </p>
+</div>

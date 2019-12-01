@@ -1,0 +1,36 @@
+@import '~@angular/cdk/overlay-prebuilt.css';
+
+body {
+  background-color: #222;
+}
+
+h1, button {
+  color: #81ef0b;
+  font-family: 'Baloo Bhai', cursive;
+  font-size: 250%;
+  margin-left: 10px;
+  margin-top: -5px;
+  margin-bottom: -10px;
+}
+
+button {
+  background-color: #222;
+  border: none;
+}
+
+.overlay-panel {
+  color: #ddd;
+  display: block;
+  background: #111;
+  padding: 20px;
+  width: 70%;
+  opacity: 0.6 !important;
+  border: 1pt solid #aaa;
+  border-radius: 4pt;
+  overflow-y: scroll;
+}
+
+.dark-backdrop {
+  background: #111;
+  opacity: 0.8 !important;
+}

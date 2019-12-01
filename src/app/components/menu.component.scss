@@ -1,32 +1,32 @@
 mat-icon {
-  padding-top: 5px;
-  padding-right: 5px;
+  padding-right: 15px;
   font-size: 100%;
 }
 
 span {
   font-family: "Kunita";
+  font-weight: bold;
   font-size: 17pt;
 }
 
 button {
-  background-color: transparent !important;
-  color: #666;
   -webkit-transition: color .4s ease;
   transition: color .4s ease;
-  &:hover {
-    color: #81ef0b;
-  }
 }
 
-.overlay-panel {
-  color: #ddd;
-  display: block;
-  background: #000;
-  padding: 20px;
-  width: 60%;
-  opacity: 0.85;
-  border: 1pt solid #aaa;
-  border-radius: 4pt;
-  overflow-y: scroll;
+.icon-button {
+  background-color: transparent !important;
+}
+
+.menu-button {
+  // border: 1pt solid #ccc;
+  background-color: #333;
+  opacity: 0.95;
+  height: 90px;
+  padding-bottom: 5pt;
+  text-transform: uppercase;
+  &:hover {
+    color: #81ef0b;
+    background-color: #111;
+  }
 }

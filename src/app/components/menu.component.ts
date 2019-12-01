@@ -5,7 +5,9 @@ import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal }  from '@angular/cdk/portal';
 import { MenuItem }         from '../shared/menuitem';
 import { MenuOverlayRef }   from '../shared/overlayref';
-import { EntryComponent }    from '../components/entry.component';
+import { EntryComponent }   from './entry.component';
+import { InfoComponent }    from './info.component';
+import { HelpComponent }    from './help.component';
 
 interface MenuOverlayConfig {
     panelClass?: string;
@@ -20,9 +22,11 @@ const DEFAULT_CONFIG: MenuOverlayConfig = {
 }
 
 const ITEMS = [
-  { "text": "change name", "icon": "edit" },
-  { "text": "help", "icon": "help" },
-  { "text": "about", "icon": "info" }
+  { "text": "change name", "icon": "edit", "select": 1 },
+  { "text": "create party", "icon": "add_circle", "select": 2 },
+  { "text": "help", "icon": "help", "select": 3 },
+  { "text": "about", "icon": "info", "select": 4 },
+  { "text": "github", "icon": "cloud_download", "select": 5 }
 ];
 
 @Component({
@@ -42,8 +46,22 @@ export class Menu {
     })
   }
 
-  showOverlay() {
-    var viewPortal = new ComponentPortal(EntryComponent);
+  showOverlay(select: Number) {
+    var viewPortal;
+    switch(select) {
+      case 1:
+        viewPortal = new ComponentPortal(EntryComponent);
+        break;
+      case 2:
+        viewPortal = new ComponentPortal(EntryComponent);
+        break;
+      case 3:
+        viewPortal = new ComponentPortal(HelpComponent);
+        break;
+      case 4:
+        viewPortal = new ComponentPortal(InfoComponent);
+        break;
+    }
     const overlayRef = this.createOverlay();
     const dialogRef = new MenuOverlayRef(overlayRef);
     overlayRef.attach(viewPortal);
@@ -51,16 +69,10 @@ export class Menu {
     return dialogRef;
   }
 
-  select(text: string) {
+  select(select: Number) {
     var viewPortal;
-    switch(text) {
-      case "edit":
-        this.showOverlay();
-        break;
-      case "github":
-        this.gotoGithub();
-        break;
-    }
+    if (select == 5) this.gotoGithub();
+    else this.showOverlay(select)
   }
 
   enterPlay() {

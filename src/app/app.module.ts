@@ -18,6 +18,8 @@ import { FeatureService } from './services/feature.service';
 import { HeaderComponent } from './components/header.component';
 import { GraphicsComponent } from './components/graphics.component';
 import { EntryComponent } from './components/entry.component';
+import { InfoComponent } from './components/info.component';
+import { HelpComponent } from './components/help.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { EntryComponent } from './components/entry.component';
     Menu,
     HeaderComponent,
     GraphicsComponent,
-    EntryComponent
+    EntryComponent,
+    InfoComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +48,7 @@ import { EntryComponent } from './components/entry.component';
     PortalModule
   ],
   providers: [ MoodplayService, DeezerService, PlayerService, FeatureService ],
-  entryComponents: [ EntryComponent ],
+  entryComponents: [ EntryComponent, InfoComponent, HelpComponent ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

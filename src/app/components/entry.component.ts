@@ -22,7 +22,8 @@ export class EntryComponent {
     if (this.username && this.username != this.moodplayService.getUser().name) {
       this.moodplayService.changeUserName(this.username);
     }
-    this.element.remove();
+    //this.element.remove();
+    window.location.reload();
   }
 
 }
