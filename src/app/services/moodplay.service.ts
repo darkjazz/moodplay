@@ -21,7 +21,10 @@ export class MoodplayService {
   constructor(private http: Http) { }
 
   public initSocket(): void {
-    this.socket = socketIo(Config.server + '/global');
+    if (this.party && this.party.id != Config.globalPartyID)
+      this.socket = socketIo(Config.server + '/' + this.party.id);
+    else
+      this.socket = socketIo(Config.server + '/global');
   }
 
   public sendUserCoordinates(userID: string, valence: number, arousal: number): void {
@@ -145,6 +148,7 @@ export class MoodplayService {
       .toPromise()
       .then((res:Response) => {
         this.party = res.json() as Party;
+        this.socket = socketIo(Config.server + '/' + this.party.id);
         return this.party;
       })
       .catch(this.handleError)
