@@ -16,6 +16,7 @@ import * as socketIo from 'socket.io-client';
 export class MoodplayService {
   private socket;
   private user: User;
+  private party: Party;
 
   constructor(private http: Http) { }
 
@@ -23,8 +24,8 @@ export class MoodplayService {
     this.socket = socketIo(Config.server + '/global');
   }
 
-  public sendUserCoordinates(userID: string, valence: number, arousal: number, partyID?: string): void {
-    var partyID = partyID ? partyID : Config.globalPartyID;
+  public sendUserCoordinates(userID: string, valence: number, arousal: number): void {
+    var partyID = this.party.id == Config.globalPartyID ? Config.globalPartyID : this.party.id;
     this.socket.emit('user_coordinates', {
       id: userID, valence: valence, arousal: arousal, partyID: partyID
     });
@@ -134,6 +135,17 @@ export class MoodplayService {
       .toPromise()
       .then((res:Response) => {
         return res.json() as Party;
+      })
+      .catch(this.handleError)
+  }
+
+  public createUserParty(user:User): Promise<Party> {
+    var param = `/${ user.id }`;
+    return this.http.get(Config.server + Config.user + '/create_new_party' + param)
+      .toPromise()
+      .then((res:Response) => {
+        this.party = res.json() as Party;
+        return this.party;
       })
       .catch(this.handleError)
   }

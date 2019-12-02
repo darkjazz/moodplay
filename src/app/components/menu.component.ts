@@ -8,6 +8,7 @@ import { MenuOverlayRef }   from '../shared/overlayref';
 import { EntryComponent }   from './entry.component';
 import { InfoComponent }    from './info.component';
 import { HelpComponent }    from './help.component';
+import { PartyComponent }    from './party.component';
 
 interface MenuOverlayConfig {
     panelClass?: string;
@@ -53,7 +54,7 @@ export class Menu {
         viewPortal = new ComponentPortal(EntryComponent);
         break;
       case 2:
-        viewPortal = new ComponentPortal(EntryComponent);
+        viewPortal = new ComponentPortal(PartyComponent);
         break;
       case 3:
         viewPortal = new ComponentPortal(HelpComponent);

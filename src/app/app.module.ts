@@ -20,6 +20,7 @@ import { GraphicsComponent } from './components/graphics.component';
 import { EntryComponent } from './components/entry.component';
 import { InfoComponent } from './components/info.component';
 import { HelpComponent } from './components/help.component';
+import { PartyComponent } from './components/party.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { HelpComponent } from './components/help.component';
     GraphicsComponent,
     EntryComponent,
     InfoComponent,
-    HelpComponent
+    HelpComponent,
+    PartyComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +50,7 @@ import { HelpComponent } from './components/help.component';
     PortalModule
   ],
   providers: [ MoodplayService, DeezerService, PlayerService, FeatureService ],
-  entryComponents: [ EntryComponent, InfoComponent, HelpComponent ],
+  entryComponents: [ EntryComponent, InfoComponent, HelpComponent, PartyComponent ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
